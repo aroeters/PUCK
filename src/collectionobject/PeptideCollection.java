@@ -44,7 +44,6 @@ public class PeptideCollection {
             return peptideNr;
         }
         return getPeptideIndex(peptide);
-        
     }
 
     public final Integer getPeptideIndex(final String peptideSequence) {

@@ -10,7 +10,7 @@ import java.util.HashSet;
  *
  * @author arne
  */
-public class Protein {
+public class Protein implements SequenceObject {
 
     /**
      * The name of the protein.
@@ -38,6 +38,7 @@ public class Protein {
      *
      * @return String name
      */
+    @Override
     public final String getName() {
         return this.name;
     }
@@ -47,6 +48,7 @@ public class Protein {
      *
      * @param newName the name of the protein
      */
+    @Override
     public final void setName(final String newName) {
         this.name = newName;
     }
@@ -78,6 +80,7 @@ public class Protein {
      *
      * @return ArrayList< String >
      */
+    @Override
     public final ArrayList<Integer> getUniquePeptides() {
         return unique_peptides;
     }
@@ -87,6 +90,7 @@ public class Protein {
      *
      * @param peptidePosition the String that contains the sequence of AA's
      */
+    @Override
     public final void addUniquePeptide(final Integer peptidePosition) {
         unique_peptides.add(peptidePosition);
     }
@@ -96,15 +100,27 @@ public class Protein {
      *
      * @param peptide the peptide sequence
      */
+    @Override
     public final void addTotalPeptides(final Integer peptide) {
         this.all_peptides.add(peptide);
     }
 
     /**
+     * Adds to the total list of peptides.
+     *
+     * @param peptides multiple peptides of the protein
+     */
+    @Override
+    public final void addTotalPeptides(final HashSet<Integer> peptides) {
+        this.all_peptides.addAll(peptides);
+    }
+
+    /**
      * Returns all peptides indexes from the protein.
      *
-     * @return HashSet<Integer> all_peptides
+     * @return HashSet<> of Integers all_peptides
      */
+    @Override
     public final HashSet<Integer> getTotalPeptides() {
         return all_peptides;
     }
@@ -114,6 +130,7 @@ public class Protein {
      *
      * @return ArrayList< String >
      */
+    @Override
     public final ArrayList<Integer> getNonUniquePeptides() {
         return peptides;
     }
@@ -123,6 +140,7 @@ public class Protein {
      *
      * @param peptidePosition the String that contains the sequence of AA's
      */
+    @Override
     public final void addNonUniquePeptide(final Integer peptidePosition) {
         peptides.add(peptidePosition);
     }
@@ -136,12 +154,14 @@ public class Protein {
     public final Boolean checkPeptide(final String peptide) {
         return this.sequence.contains(peptide);
     }
+
     /**
      * checks if the peptide is part of the protein.
      *
      * @param peptide String of the peptide
      * @return True if peptide is part of the protein
      */
+    @Override
     public final Boolean checkTotalPeptide(final Integer peptide) {
         return this.all_peptides.contains(peptide);
     }

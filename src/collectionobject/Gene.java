@@ -10,8 +10,12 @@ import java.util.HashSet;
  *
  * @author arne
  */
-public class Gene {
+public class Gene implements SequenceObject {
 
+    /**
+     * String sequence of the gene.
+     */
+    String sequence;
     /**
      * The name of the Gene.
      */
@@ -34,6 +38,7 @@ public class Gene {
      *
      * @return String name
      */
+    @Override
     public final String getName() {
         return this.name;
     }
@@ -59,6 +64,7 @@ public class Gene {
      *
      * @param newName the name of the protein
      */
+    @Override
     public final void setName(final String newName) {
         this.name = newName;
     }
@@ -68,6 +74,7 @@ public class Gene {
      *
      * @return ArrayList< String >
      */
+    @Override
     public final ArrayList<Integer> getUniquePeptides() {
         return unique_peptides;
     }
@@ -77,14 +84,17 @@ public class Gene {
      *
      * @param peptidePosition the String that contains the sequence of AA's
      */
+    @Override
     public final void addUniquePeptide(final Integer peptidePosition) {
         unique_peptides.add(peptidePosition);
     }
+
     /**
      * Returns the whole ArrayList of non unique peptides.
      *
      * @return ArrayList< String >
      */
+    @Override
     public final ArrayList<Integer> getNonUniquePeptides() {
         return peptides;
     }
@@ -94,6 +104,7 @@ public class Gene {
      *
      * @param peptidePosition the String that contains the sequence of AA's
      */
+    @Override
     public final void addNonUniquePeptide(final Integer peptidePosition) {
         peptides.add(peptidePosition);
     }
@@ -104,16 +115,29 @@ public class Gene {
      * @param peptide String of the peptide
      * @return True if peptide is part of the gene
      */
+    @Override
     public final Boolean checkTotalPeptide(final Integer peptide) {
         return this.all_peptides.contains(peptide);
     }
+
     /**
      * Adds to the total list of peptides.
      *
      * @param peptides a set of peptides that are part of the gene.
      */
+    @Override
     public final void addTotalPeptides(final HashSet<Integer> peptides) {
         this.all_peptides.addAll(peptides);
+    }
+
+    /**
+     * Adds to the total list of peptides.
+     *
+     * @param peptide a single peptide that is part of the gene.
+     */
+    @Override
+    public final void addTotalPeptides(final Integer peptide) {
+        this.all_peptides.add(peptide);
     }
 
     /**
@@ -121,8 +145,32 @@ public class Gene {
      *
      * @return HashSet all_peptides
      */
+    @Override
     public final HashSet<Integer> getTotalPeptides() {
         return all_peptides;
     }
 
+    /**
+     * Returns the AA sequence of the protein.
+     *
+     * @return String AA sequence
+     */
+    @Override
+    public String getSequence() {
+        return this.sequence;
+    }
+
+    /**
+     * Sets the AA sequence of the protein.
+     *
+     * @param newSequence String AA sequence
+     */
+    @Override
+    public final void setSequence(final String newSequence) {
+        if (this.sequence == null) {
+            this.sequence = newSequence;
+        } else {
+            this.sequence += newSequence.replaceAll("[\n]\\s+", "");
+        }
+    }
 }

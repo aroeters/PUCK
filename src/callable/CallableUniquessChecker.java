@@ -14,6 +14,7 @@ import collectionobject.ProteinCollection;
 import collectionobject.Gene;
 import collectionobject.GeneCollection;
 import collectionobject.PeptideCollection;
+import collectionobject.SequenceObject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -73,91 +74,46 @@ public class CallableUniquessChecker {
         /**
          * The gene object.
          */
-        private final Gene gene;
-        /**
-         * The protein object;
-         */
-        private final Protein protein;
+        private final SequenceObject sobject;
         /**
          * The total peptide Collection
          */
         private final PeptideCollection pepCollection;
-        /**
-         * True if the object is a gene.
-         */
-        private final boolean isGene;
 
         /**
          * Initiates the subclass.
          *
          * @param pepCol the whole peptide collection.
-         * @param gene a gene object
+         * @param seqObject Gene or Protein object 
          */
-        public CallableChecker(final Gene gene, final PeptideCollection pepCol) {
-            this.isGene = true;
-            this.gene = gene;
+        public CallableChecker(final SequenceObject seqObject, final PeptideCollection pepCol) {
+            this.sobject = seqObject;
             this.pepCollection = pepCol;
-            this.protein = null;
-        }
-
-        /**
-         * Initiates the subclass.
-         *
-         * @param pepCol the whole peptide collection.
-         * @param protein a protein object
-         */
-        public CallableChecker(final Protein protein, final PeptideCollection pepCol) {
-            this.isGene = false;
-            this.protein = protein;
-            this.pepCollection = pepCol;
-            this.gene = null;
         }
 
         @Override
         public final HashMap<String, ArrayList<String>> call() {
             String peptideSequence;
             HashMap<String, ArrayList<String>> info = new HashMap<>();
-            if (this.isGene) {
-                info.put(this.gene.getName(), null);
-                ArrayList<String> unique = new ArrayList<>();
-                for (Integer peptide : this.gene.getUniquePeptides()) {
-                    if (gene.checkTotalPeptide(peptide)) {
-                        unique.add(this.pepCollection.getPeptideSequence(peptide) + "+");
-                    } else {
-                        unique.add(this.pepCollection.getPeptideSequence(peptide));
-                    }
+            info.put(this.sobject.getName(), null);
+            ArrayList<String> unique = new ArrayList<>();
+            for (Integer peptide : this.sobject.getUniquePeptides()) {
+                if (sobject.checkTotalPeptide(peptide)) {
+                    unique.add(this.pepCollection.getPeptideSequence(peptide) + "+");
+                } else {
+                    unique.add(this.pepCollection.getPeptideSequence(peptide));
                 }
-                info.put("unique", unique);
-                ArrayList<String> non_unique = new ArrayList<>();
-                for (Integer peptide : this.gene.getNonUniquePeptides()) {
-                    if (gene.checkTotalPeptide(peptide)) {
-                        non_unique.add(this.pepCollection.getPeptideSequence(peptide) + "+");
-                    } else {
-                        non_unique.add(this.pepCollection.getPeptideSequence(peptide));
-                    }
-                }
-                info.put("non_unique", non_unique);
-            } else {
-                info.put(this.protein.getName(), null);
-                ArrayList<String> unique = new ArrayList<>();
-                for (Integer peptide : this.protein.getUniquePeptides()) {
-                    if (protein.checkTotalPeptide(peptide)) {
-                        unique.add(this.pepCollection.getPeptideSequence(peptide) + "+");
-                    } else {
-                        unique.add(this.pepCollection.getPeptideSequence(peptide));
-                    }
-                }
-                info.put("unique", unique);
-                ArrayList<String> non_unique = new ArrayList<>();
-                for (Integer peptide : this.protein.getNonUniquePeptides()) {
-                    if (protein.checkTotalPeptide(peptide)) {
-                        non_unique.add(this.pepCollection.getPeptideSequence(peptide) + "+");
-                    } else {
-                        non_unique.add(this.pepCollection.getPeptideSequence(peptide));
-                    }
-                }
-                info.put("non_unique", non_unique);
             }
+            info.put("unique", unique);
+            ArrayList<String> non_unique = new ArrayList<>();
+            for (Integer peptide : this.sobject.getNonUniquePeptides()) {
+                if (sobject.checkTotalPeptide(peptide)) {
+                    non_unique.add(this.pepCollection.getPeptideSequence(peptide) + "+");
+                } else {
+                    non_unique.add(this.pepCollection.getPeptideSequence(peptide));
+                }
+            }
+            info.put("non_unique", non_unique);
             return info;
         }
     }

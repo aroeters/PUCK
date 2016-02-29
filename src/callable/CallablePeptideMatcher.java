@@ -96,7 +96,7 @@ public class CallablePeptideMatcher {
         // creates a set with future objects which can be accessed after the all processes are completed
         Set<Future<LinkedList<String>>> set = new HashSet<>();
         Callable<LinkedList<String>> callable;
-        for (String peptide : this.pepCol.getAllPeptides().subList(1, 10)) {
+        for (String peptide : this.pepCol.getAllPeptides()) {
             callable = new CallableMatcher(peptide, this.protCol);
             Future<LinkedList<String>> future = pool.submit(callable);
             set.add(future);

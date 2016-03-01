@@ -3,7 +3,7 @@
  */
 package proteinquantifier;
 
-import Tools.CMDArgumentParser;
+import tools.CMDArgumentParser;
 import collectionobject.ProteinCollection;
 import fileparser.FastaDatabaseParser;
 import java.io.IOException;

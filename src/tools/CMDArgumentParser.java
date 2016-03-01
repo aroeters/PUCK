@@ -1,7 +1,7 @@
 /*
  *Author: Arne Roeters
  */
-package Tools;
+package tools;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -141,7 +141,6 @@ public class CMDArgumentParser {
                 this.arguments.put("f", cmd.getOptionValue("f"));
             }
         }
-        System.out.println(arguments);
         return arguments;
     }
 

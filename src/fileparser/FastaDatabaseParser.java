@@ -217,7 +217,7 @@ public class FastaDatabaseParser {
         cfw.writeProteinUniquenessToCsv(proteinCollection);
     }
     /**
-     * Get the digester method to use.
+     * Get the enzyme for digestion to use.
      * @param digestionType method for digesting the peptides
      * @param minPepLen minimal peptide length
      * @return the Digester

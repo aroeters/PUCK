@@ -1,7 +1,7 @@
 /*
  *Author: Arne Roeters
  */
-package Tools;
+package tools;
 
 /**
  *

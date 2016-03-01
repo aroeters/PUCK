@@ -28,21 +28,21 @@ public interface LargeSequenceObject {
      *
      * @return String object name
      */
-    public String getName();
+    String getName();
 
     /**
      * Sets the name of the object.
      *
      * @param newName name of the object
      */
-    public void setName(final String newName);
+    void setName(final String newName);
 
     /**
      * Returns the whole ArrayList of unique peptides.
      *
      * @return ArrayList< String >
      */
-    public ArrayList<Integer> getUniquePeptides();
+    ArrayList<Integer> getUniquePeptides();
 
     /**
      * Adds a peptide to the unique peptides list.

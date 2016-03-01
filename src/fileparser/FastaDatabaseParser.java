@@ -45,7 +45,7 @@ public class FastaDatabaseParser {
     /**
      * The peptide collection that will hold all peptides.
      */
-    PeptideCollection peptideCollection = new PeptideCollection();
+    private PeptideCollection peptideCollection = new PeptideCollection();
     /**
      * The number of cores to use.
      */
@@ -63,54 +63,19 @@ public class FastaDatabaseParser {
      * @param maxProteinNr maximum number of protein that can match to a protein
      * @param resultFile path and filename for the result file
      * @param database String of the database fastaFile
-     * @param digestiontype type of digestion wanted
+     * @param digestionType type of digestion wanted
      * @param minPepLen minimal length of the peptides to be used
      * @throws IOException when directory or files are not found
      */
     public FastaDatabaseParser(final String coreNumber, final Integer maxProteinNr, String resultFile,
-            final String database, final String digestiontype, final Integer minPepLen)
+            final String database, final String digestionType, final Integer minPepLen)
             throws IOException, Exception {
-        Digester digester;
-        switch (digestiontype) {
-            case "0": {
-                digester = new NoDigester(minPepLen);
-                break;
-            }
-            case "1": {
-                digester = new TrypsinDigesterConservative(minPepLen);
-                break;
-            }
-            case "2": {
-                digester = new TrypsinDigester(minPepLen);
-                break;
-            }
-            case "3": {
-                digester = new PepsinDigesterHigherPH(minPepLen);
-                break;
-            }
-            case "4": {
-                digester = new PepsinDigesterLowPH(minPepLen);
-                break;
-            }
-            case "5": {
-                digester = new ChemotrypsinDigesterHighSpecific(minPepLen);
-                break;
-            }
-            case "6": {
-                digester = new ChemotrypsinDigesterLowSpecific(minPepLen);
-                break;
-            }
-            default: {
-                digester = new NoDigester(minPepLen);
-                break;
-            }
-        }
         this.databaseFile = database;
-        String filename = database.split("/")[database.split("/").length - 1];
-        this.digesterType = digester;
+        this.digesterType = getDigester(digestionType, minPepLen);
         if (!resultFile.endsWith("/")) {
             resultFile = resultFile + "/";
         }
+        String filename = database.split("/")[database.split("/").length - 1];
         this.resultFileName = resultFile + filename.replace(".fasta", "");
         System.out.println("The final results will be placed in: " + resultFile);
         this.coreNr = coreNumber;
@@ -127,7 +92,6 @@ public class FastaDatabaseParser {
     public final ProteinCollection getProteinCollection()
             throws IOException, FileNotFoundException, Exception {
         ProteinCollection pc = new ProteinCollection();
-        
         File file2Parse = new File(this.databaseFile);
         BufferedReader br = new BufferedReader(new FileReader(file2Parse.getPath()));
         String line;
@@ -251,5 +215,39 @@ public class FastaDatabaseParser {
         cfw.writeExcessPeptides(excessivePeptides);
         cfw.writeGeneUniquenessToCsv(geneCol);
         cfw.writeProteinUniquenessToCsv(proteinCollection);
+    }
+    /**
+     * Get the digester method to use.
+     * @param digestionType method for digesting the peptides
+     * @param minPepLen minimal peptide length
+     * @return the Digester
+     */
+    private Digester getDigester(final String digestionType, final Integer minPepLen) {
+        switch (digestionType) {
+            case "0": {
+                return new NoDigester(minPepLen);
+            }
+            case "1": {
+                return new TrypsinDigesterConservative(minPepLen);
+            }
+            case "2": {
+                return new TrypsinDigester(minPepLen);
+            }
+            case "3": {
+                return new PepsinDigesterHigherPH(minPepLen);
+            }
+            case "4": {
+                return new PepsinDigesterLowPH(minPepLen);
+            }
+            case "5": {
+                return new ChemotrypsinDigesterHighSpecific(minPepLen);
+            }
+            case "6": {
+                return new ChemotrypsinDigesterLowSpecific(minPepLen);
+            }
+            default: {
+                return new NoDigester(minPepLen);
+            }
+        }
     }
 }

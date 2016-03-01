@@ -28,25 +28,24 @@ import java.util.HashMap;
  *
  * @author arne
  */
-public class FastaFileParser {
+public class FastaDatabaseParser {
 
     /**
      * The path and filename that should be parsed.
      */
-    private final String file;
+    private final String databaseFile;
     /**
      * Contains the type of digestion wanted for the digestion.
      */
     private final Digester digesterType;
     /**
-     * The path and filename for the result fiHashSet<String>le.
+     * The path and filename for the result file.
      */
     private final String resultFileName;
     /**
-     * The protein collection to use.
+     * The peptide collection that will hold all peptides.
      */
-    private ProteinCollection proteinCollection;
-
+    PeptideCollection peptideCollection = new PeptideCollection();
     /**
      * The number of cores to use.
      */
@@ -61,13 +60,14 @@ public class FastaFileParser {
      * Constructor of the class.
      *
      * @param coreNumber number of cores to use
+     * @param maxProteinNr maximum number of protein that can match to a protein
      * @param resultFile path and filename for the result file
      * @param database String of the database fastaFile
      * @param digestiontype type of digestion wanted
      * @param minPepLen minimal length of the peptides to be used
      * @throws IOException when directory or files are not found
      */
-    public FastaFileParser(final String coreNumber, final Integer maxProteinNr, String resultFile,
+    public FastaDatabaseParser(final String coreNumber, final Integer maxProteinNr, String resultFile,
             final String database, final String digestiontype, final Integer minPepLen)
             throws IOException, Exception {
         Digester digester;
@@ -105,7 +105,7 @@ public class FastaFileParser {
                 break;
             }
         }
-        this.file = database;
+        this.databaseFile = database;
         String filename = database.split("/")[database.split("/").length - 1];
         this.digesterType = digester;
         if (!resultFile.endsWith("/")) {
@@ -115,27 +115,25 @@ public class FastaFileParser {
         System.out.println("The final results will be placed in: " + resultFile);
         this.coreNr = coreNumber;
         this.maxProteins = maxProteinNr;
-        readFile(database);
     }
 
     /**
      * Reads the file and parses it.
      *
-     * @param ensgDatabase ENST/UniProt ID to ENSG conversion database
+     * @return ProteinCollection with all proteins in it
      * @throws FileNotFoundException if the file not exists
      * @throws IOException .
      */
-    public final void readFile(final String ensgDatabase)
+    public final ProteinCollection getProteinCollection()
             throws IOException, FileNotFoundException, Exception {
         ProteinCollection pc = new ProteinCollection();
-        PeptideCollection pepCol = new PeptideCollection();
-        File file2Parse = new File(this.file);
+        
+        File file2Parse = new File(this.databaseFile);
         BufferedReader br = new BufferedReader(new FileReader(file2Parse.getPath()));
         String line;
         String name = "";
         Protein protein = new Protein();
         Boolean notValidProtein = false;
-
         while ((line = br.readLine()) != null) {
             if (!notValidProtein) {
                 if (line.startsWith(">NEWP") || line.startsWith(">GENSCAN")) {
@@ -144,7 +142,7 @@ public class FastaFileParser {
                     if (protein.getName() != null) {
                         ArrayList<String> peptides = this.digesterType.digest(protein.getSequence());
                         for (String peptide : peptides) {
-                            protein.addTotalPeptides(pepCol.addPeptide(peptide));
+                            protein.addTotalPeptides(peptideCollection.addPeptide(peptide));
                         }
                         pc.addProtein(name, protein);
                         protein = new Protein();
@@ -162,23 +160,22 @@ public class FastaFileParser {
                 notValidProtein = false;
             }
         }
-        System.out.println("Finished collecting proteins from: " + this.file);
-        getPeptideUniqueness(pc, pepCol);
+        System.out.println("Finished collecting proteins from: " + this.databaseFile);
+        return pc;
     }
 
     /**
      * writes the uniqueness of the peptide per protein to a file.
      *
      * @param proteinCollection a filled protein collection
-     * @param pepCol a filled peptide collection
      * @throws java.io.IOException when input or output gives an error
      * @throws Exception when an error occurs
      */
-    public final void getPeptideUniqueness(final ProteinCollection proteinCollection, final PeptideCollection pepCol) throws IOException, Exception {
+    public final void getPeptideUniqueness(final ProteinCollection proteinCollection) throws IOException, Exception {
         ENSEMBLDatabaseConnector edc = new ENSEMBLDatabaseConnector();
         long start = System.currentTimeMillis();
         // Get all matches per peptide with the given database
-        CallablePeptideMatcher searcher = new CallablePeptideMatcher(pepCol, proteinCollection);
+        CallablePeptideMatcher searcher = new CallablePeptideMatcher(peptideCollection, proteinCollection);
         Set<Future<LinkedList<String>>> set = searcher.matchPeptides(Integer.parseInt(this.coreNr));
         // create a geneCollection which will hold the genes that are needed for the output
         GeneCollection geneCol = new GeneCollection();
@@ -191,7 +188,7 @@ public class FastaFileParser {
             if (futureSet.size() > this.maxProteins) {
                 excessivePeptides.put(futureSet.get(0), futureSet.size());
             } else {
-                Integer peptideIndex = pepCol.getPeptideIndex(futureSet.get(0));
+                Integer peptideIndex = peptideCollection.getPeptideIndex(futureSet.get(0));
                 geneMap = new HashMap<>();
                 String proteinNameConverted;
                 ArrayList<String> proteinList;
@@ -249,9 +246,10 @@ public class FastaFileParser {
         }
         long end = System.currentTimeMillis() - start;
         System.out.println(end + "ms = " + end / 1000 + "s = " + end / 60000 + "m = " + end / 3600000 + "h");
-        CsvFileWriter cfw = new CsvFileWriter(this.resultFileName, pepCol, Integer.parseInt(this.coreNr));
+        CsvFileWriter cfw = new CsvFileWriter(this.resultFileName, peptideCollection, Integer.parseInt(this.coreNr));
+        // Write all results to the files
+        cfw.writeExcessPeptides(excessivePeptides);
         cfw.writeGeneUniquenessToCsv(geneCol);
         cfw.writeProteinUniquenessToCsv(proteinCollection);
-        cfw.writeExcessPeptides(excessivePeptides);
     }
 }

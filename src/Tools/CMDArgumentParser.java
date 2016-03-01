@@ -8,7 +8,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -137,7 +136,8 @@ public class CMDArgumentParser {
             formatter.printHelp("You should provide a valid database to match the peptides against.\nThis file needs to be .fa or .fasta format", options);
             System.exit(0);
         } else {
-            if (checkValidDatabaseFileOption(cmd.getOptionValue("f"), options, "You should provide a valid database to match the peptides against.\nThis file has to be a valid .fa or .fasta format.")) {
+            if (checkValidDatabaseFileOption(cmd.getOptionValue("f"), options, "You should provide a valid database to match the peptides against.\n"
+                    + "This file has to be a valid .fa or .fasta format.")) {
                 this.arguments.put("f", cmd.getOptionValue("f"));
             }
         }
@@ -194,7 +194,8 @@ public class CMDArgumentParser {
      * @throws FileNotFoundException if the file is not found.
      * @throws IOException if an error occurs during in or output handling
      */
-    private boolean checkValidDatabaseFileOption(final String optionValue, final Options options, final String errorMessage) throws FileNotFoundException, IOException {
+    private boolean checkValidDatabaseFileOption(final String optionValue, final Options options, final String errorMessage)
+            throws FileNotFoundException, IOException {
         File file = new File(optionValue);
         if (file.isFile() && optionValue.endsWith(".fa") || optionValue.endsWith(".fasta")) {
             BufferedReader br = new BufferedReader(new FileReader(file.getPath()));

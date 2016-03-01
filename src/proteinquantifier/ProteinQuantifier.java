@@ -4,7 +4,8 @@
 package proteinquantifier;
 
 import Tools.CMDArgumentParser;
-import fileparser.FastaFileParser;
+import collectionobject.ProteinCollection;
+import fileparser.FastaDatabaseParser;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -25,13 +26,16 @@ public class ProteinQuantifier {
     public static void main(final String[] args) throws IOException, Exception {
         CMDArgumentParser parser = new CMDArgumentParser();
         HashMap cmdArguments = parser.getCMDArguments(args);
-        FastaFileParser ffp = new FastaFileParser(
+        FastaDatabaseParser databaseParser = new FastaDatabaseParser(
                 cmdArguments.get("a").toString(),
                 Integer.parseInt(cmdArguments.get("b").toString()),
                 cmdArguments.get("c").toString(),
                 cmdArguments.get("f").toString(),
                 cmdArguments.get("d").toString(),
                 Integer.parseInt(cmdArguments.get("e").toString()));
+        ProteinCollection proteinCollection = databaseParser.getProteinCollection();
+        databaseParser.getPeptideUniqueness(proteinCollection);
+        
     }
 
 }

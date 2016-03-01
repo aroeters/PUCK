@@ -13,7 +13,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -68,7 +67,7 @@ public class FastaFileParser {
      * @param minPepLen minimal length of the peptides to be used
      * @throws IOException when directory or files are not found
      */
-    public FastaFileParser(final String coreNumber, final Integer maxProteinNr, final String resultFile,
+    public FastaFileParser(final String coreNumber, final Integer maxProteinNr, String resultFile,
             final String database, final String digestiontype, final Integer minPepLen)
             throws IOException, Exception {
         Digester digester;
@@ -109,8 +108,11 @@ public class FastaFileParser {
         this.file = database;
         String filename = database.split("/")[database.split("/").length - 1];
         this.digesterType = digester;
-        this.resultFileName = resultFile + "/" + filename.replace(".fasta", "");
-        System.out.println("The final results will be placed in: " + resultFile + "/");
+        if (!resultFile.endsWith("/")) {
+            resultFile = resultFile + "/";
+        }
+        this.resultFileName = resultFile + filename.replace(".fasta", "");
+        System.out.println("The final results will be placed in: " + resultFile);
         this.coreNr = coreNumber;
         this.maxProteins = maxProteinNr;
         readFile(database);
@@ -128,39 +130,36 @@ public class FastaFileParser {
         ProteinCollection pc = new ProteinCollection();
         PeptideCollection pepCol = new PeptideCollection();
         File file2Parse = new File(this.file);
-        if (file2Parse.toString().endsWith(".fa") || file2Parse.toString().endsWith(".fasta")) {
-            BufferedReader br = new BufferedReader(
-                    new FileReader(file2Parse.getPath()));
-            String line;
-            String name = "";
-            Protein protein = new Protein();
-            Boolean notValidProtein = false;
+        BufferedReader br = new BufferedReader(new FileReader(file2Parse.getPath()));
+        String line;
+        String name = "";
+        Protein protein = new Protein();
+        Boolean notValidProtein = false;
 
-            while ((line = br.readLine()) != null) {
-                if (!notValidProtein) {
-                    if (line.startsWith(">NEWP") || line.startsWith(">GENSCAN")) {
-                        notValidProtein = true;
-                    } else if (line.startsWith(">") && !pc.getProteinNames().contains(line.substring(1))) {
-                        if (protein.getName() != null) {
-                            ArrayList<String> peptides = this.digesterType.digest(protein.getSequence());
-                            for (String peptide : peptides) {
-                                protein.addTotalPeptides(pepCol.addPeptide(peptide));
-                            }
-                            pc.addProtein(name, protein);
-                            protein = new Protein();
+        while ((line = br.readLine()) != null) {
+            if (!notValidProtein) {
+                if (line.startsWith(">NEWP") || line.startsWith(">GENSCAN")) {
+                    notValidProtein = true;
+                } else if (line.startsWith(">") && !pc.getProteinNames().contains(line.substring(1))) {
+                    if (protein.getName() != null) {
+                        ArrayList<String> peptides = this.digesterType.digest(protein.getSequence());
+                        for (String peptide : peptides) {
+                            protein.addTotalPeptides(pepCol.addPeptide(peptide));
                         }
-                        if (line.startsWith(">sp") || line.startsWith(">tr")) {
-                            name = line.split("\\|")[1];
-                        } else {
-                            name = line.substring(1).replaceAll("\\s", "");
-                        }
-                        protein.setName(name);
-                    } else {
-                        protein.setSequence(line);
+                        pc.addProtein(name, protein);
+                        protein = new Protein();
                     }
-                } else if (notValidProtein) {
-                    notValidProtein = false;
+                    if (line.startsWith(">sp") || line.startsWith(">tr")) {
+                        name = line.split("\\|")[1];
+                    } else {
+                        name = line.substring(1).replaceAll("\\s", "");
+                    }
+                    protein.setName(name);
+                } else {
+                    protein.setSequence(line);
                 }
+            } else if (notValidProtein) {
+                notValidProtein = false;
             }
         }
         System.out.println("Finished collecting proteins from: " + this.file);

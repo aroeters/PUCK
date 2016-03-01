@@ -10,7 +10,7 @@ import java.util.HashSet;
  *
  * @author arne
  */
-public class Gene implements SequenceObject {
+public class Gene implements LargeSequenceObject {
 
     /**
      * String sequence of the gene.

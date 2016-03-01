@@ -14,7 +14,7 @@ import collectionobject.ProteinCollection;
 import collectionobject.Gene;
 import collectionobject.GeneCollection;
 import collectionobject.PeptideCollection;
-import collectionobject.SequenceObject;
+import collectionobject.LargeSequenceObject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -74,7 +74,7 @@ public class CallableUniquessChecker {
         /**
          * The gene object.
          */
-        private final SequenceObject sobject;
+        private final LargeSequenceObject sobject;
         /**
          * The total peptide Collection
          */
@@ -86,7 +86,7 @@ public class CallableUniquessChecker {
          * @param pepCol the whole peptide collection.
          * @param seqObject Gene or Protein object 
          */
-        public CallableChecker(final SequenceObject seqObject, final PeptideCollection pepCol) {
+        public CallableChecker(final LargeSequenceObject seqObject, final PeptideCollection pepCol) {
             this.sobject = seqObject;
             this.pepCollection = pepCol;
         }

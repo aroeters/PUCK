@@ -10,7 +10,7 @@ import java.util.HashSet;
  *
  * @author arne
  */
-public interface SequenceObject {
+public interface LargeSequenceObject {
     /**
      * Returns the AA sequence of the protein.
      *

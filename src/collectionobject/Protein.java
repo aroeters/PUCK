@@ -10,7 +10,7 @@ import java.util.HashSet;
  *
  * @author arne
  */
-public class Protein implements SequenceObject {
+public class Protein implements LargeSequenceObject {
 
     /**
      * The name of the protein.

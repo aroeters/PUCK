@@ -318,8 +318,8 @@ public class CMDArgumentParser {
             formatter.printHelp(error, options);
             System.exit(0);
         }
-        HashSet<Character> AA = new HashSet<>(Arrays.asList('A', 'G', 'V', 'L', 'I', 'P',
-                'F', 'Y', 'W', 'S', 'T', 'C', 'M', 'N', 'Q', 'K', 'R', 'H', 'D', 'E'));
+        HashSet<Character> AA = new HashSet<>(Arrays.asList('A', 'C',  'D', 'E', 'F', 'G' , 'H', 'I', 'K', 'L', 'M', 'N', 'P',
+                'Q', 'R', 'S', 'T', 'V', 'W', 'Y'));
         ArrayList<String> faultyPeptides = new ArrayList<>();
         for (String peptide : peptides) {
             for (int i = 0; i < peptide.length(); i++) {

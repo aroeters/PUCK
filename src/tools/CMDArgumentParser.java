@@ -8,11 +8,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -81,6 +85,21 @@ public class CMDArgumentParser {
         options.addOption(OptionBuilder.withLongOpt("help")
                 .withDescription("Prints the help if used")
                 .create("h"));
+        options.addOption(OptionBuilder.withLongOpt("peptide_file")
+                .withDescription("The path and name of the file that contains the peptides.\n")
+                .hasArg()
+                .create("p"));
+        options.addOption(OptionBuilder.withLongOpt("peptides")
+                .withDescription("Multiple peptides seperated by spaces. (e.g. peptide1 ... peptide25)\n")
+                .hasArgs(Option.UNLIMITED_VALUES)
+                .create("g"));
+        options.addOption(OptionBuilder.withLongOpt("file_options")
+                .withDescription("Choose which filea you want:\n"
+                        + "\tOnly match genes = g\n"
+                        + "\tOnly match peptides = p\n"
+                        + "\tBoth = b (default)")
+                .hasArgs(Option.UNLIMITED_VALUES)
+                .create("o"));
 
         CommandLineParser parser = new BasicParser();
         CommandLine cmd = parser.parse(options, args);
@@ -92,7 +111,7 @@ public class CMDArgumentParser {
         }
         // Checks the threads option
         if (cmd.hasOption("a") || cmd.hasOption("threads")) {
-            if (checkValidIntegerOption(cmd.getOptionValue("a"), options, "The number of threads you entered is not a valid number.")) {
+            if (checkValidInteger(cmd.getOptionValue("a"), options, "The number of threads you entered is not a valid number.")) {
                 this.arguments.put("a", cmd.getOptionValue("a"));
             }
         } else {
@@ -100,7 +119,7 @@ public class CMDArgumentParser {
         }
         // Checks the max proteins option
         if (cmd.hasOption("b") || cmd.hasOption("max_proteins")) {
-            if (checkValidIntegerOption(cmd.getOptionValue("b"), options, "The number of proteins that a peptide can match to is not a valid number.")) {
+            if (checkValidInteger(cmd.getOptionValue("b"), options, "The number of proteins that a peptide can match to is not a valid number.")) {
                 this.arguments.put("b", cmd.getOptionValue("b"));
             }
         } else {
@@ -108,7 +127,7 @@ public class CMDArgumentParser {
         }
         // Checks the result dir option
         if (cmd.hasOption("c") || cmd.hasOption("result_dir")) {
-            if (checkValidDirectoryOption(cmd.getOptionValue("c"), options, "The directory for the final results is not a valid directory.")) {
+            if (checkValidDirectory(cmd.getOptionValue("c"), options, "The directory for the final results is not a valid directory.")) {
                 this.arguments.put("c", cmd.getOptionValue("c"));
             }
         } else {
@@ -116,7 +135,7 @@ public class CMDArgumentParser {
         }
         // checks the digestion option
         if (cmd.hasOption("d") || cmd.hasOption("digestion")) {
-            if (checkValidIntegerOption(cmd.getOptionValue("d"), options, "The digestion you chose is not correct.\nPlease try again with a valid digestion method.")) {
+            if (checkValidInteger(cmd.getOptionValue("d"), options, "The digestion you chose is not correct.\nPlease try again with a valid digestion method.")) {
                 this.arguments.put("d", cmd.getOptionValue("d"));
             }
         } else {
@@ -124,7 +143,7 @@ public class CMDArgumentParser {
         }
         // Checks the minimal peptide length option
         if (cmd.hasOption("e") || cmd.hasOption("min_peptide_length")) {
-            if (checkValidIntegerOption(cmd.getOptionValue("e"), options, "You should enter a valid number for the minimal length of a peptide.")) {
+            if (checkValidInteger(cmd.getOptionValue("e"), options, "You should enter a valid number for the minimal length of a peptide.")) {
                 this.arguments.put("e", cmd.getOptionValue("e"));
             }
         } else {
@@ -136,10 +155,37 @@ public class CMDArgumentParser {
             formatter.printHelp("You should provide a valid database to match the peptides against.\nThis file needs to be .fa or .fasta format", options);
             System.exit(0);
         } else {
-            if (checkValidDatabaseFileOption(cmd.getOptionValue("f"), options, "You should provide a valid database to match the peptides against.\n"
+            if (checkValidDatabaseFile(cmd.getOptionValue("f"), options, "You should provide a valid database to match the peptides against.\n"
                     + "This file has to be a valid .fa or .fasta format.")) {
                 this.arguments.put("f", cmd.getOptionValue("f"));
             }
+        }
+        if (cmd.hasOption("p") || cmd.hasOption("peptide_file")) {
+            if (checkValidFile(cmd.getOptionValue("p"), options, "You should provide a valid file with peptides in it.")) {
+                this.arguments.put("p", cmd.getOptionValue("p"));
+            }
+        } else {
+            this.arguments.put("p", null);
+        }
+        if (cmd.hasOption("g") || cmd.hasOption("peptides")) {
+            if (checkValidPeptides(cmd.getOptionValues("g"), options, "One of the peptides you provided is not correct.")) {
+                StringBuilder peptideLine = new StringBuilder();
+                for (String peptide : cmd.getOptionValues("g")) {
+                    peptideLine.append(peptide + "_");
+                }
+
+                this.arguments.put("g", peptideLine.substring(0, peptideLine.length() - 1));
+            }
+        } else {
+            this.arguments.put("g", null);
+        }
+        if (cmd.hasOption("o") || cmd.hasOption("file_options")) {
+            if (checkFileOptions(cmd.getOptionValue("o"), options, "The file option you chose is not correct.\n"
+                    + "Choose p (proteins), g (genes), b(both)")) {
+                arguments.put("o", cmd.getOptionValue("o"));
+            }
+        } else {
+            arguments.put("o", "b");
         }
         return arguments;
     }
@@ -149,9 +195,10 @@ public class CMDArgumentParser {
      *
      * @param optionValue the value of the option
      * @param options the options object
+     * @param errorMessage The message it should display if not a valid value
      * @return true if option a/threads is a valid value
      */
-    private boolean checkValidIntegerOption(final String optionValue, final Options options, final String errorMessage) {
+    public boolean checkValidInteger(final String optionValue, final Options options, final String errorMessage) {
         try {
             Integer check = Integer.parseInt(optionValue);
         } catch (IllegalArgumentException IAE) {
@@ -167,11 +214,24 @@ public class CMDArgumentParser {
      *
      * @param optionValue the value of option
      * @param options the options object
+     * @param errorMessage The message it should display if not a valid value
      * @return true if option value is a valid directory
      */
-    private boolean checkValidDirectoryOption(final String optionValue, final Options options, final String errorMessage) {
+    public boolean checkValidDirectory(final String optionValue, final Options options, final String errorMessage) {
         File file = new File(optionValue);
         if (file.isDirectory()) {
+            return true;
+        } else {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp(errorMessage, options);
+            System.exit(0);
+        }
+        return false;
+    }
+
+    public boolean checkFileOptions(final String optionValue, final Options options, final String errorMessage) {
+        HashSet<String> optionSet = new HashSet<>(Arrays.asList("p", "g", "b"));
+        if (optionSet.contains(optionValue)) {
             return true;
         } else {
             HelpFormatter formatter = new HelpFormatter();
@@ -184,16 +244,17 @@ public class CMDArgumentParser {
     /**
      * Checks if the option value is a valid database file. Checks if the file
      * extension is .fa or .fasta and if it is a valid file. When that passes
-     * checks if the first or second line startswith an ">" which is typical for
-     * a fa and fasta file.
+     * checks if the first or second line starts with an ">" which is typical
+     * for a fa and fasta file.
      *
      * @param optionValue the value of option
      * @param options the options object
+     * @param errorMessage The message it should display if not a valid value
      * @return true if option value is a valid database in .fa or .fasta format
      * @throws FileNotFoundException if the file is not found.
      * @throws IOException if an error occurs during in or output handling
      */
-    private boolean checkValidDatabaseFileOption(final String optionValue, final Options options, final String errorMessage)
+    public boolean checkValidDatabaseFile(final String optionValue, final Options options, final String errorMessage)
             throws FileNotFoundException, IOException {
         File file = new File(optionValue);
         if (file.isFile() && optionValue.endsWith(".fa") || optionValue.endsWith(".fasta")) {
@@ -217,6 +278,63 @@ public class CMDArgumentParser {
         } else {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp(errorMessage, options);
+            System.exit(0);
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the given file path leads to a file.
+     *
+     * @param filePath path and name to the file
+     * @param options the options object
+     * @param errorMessage The message it should display if not a valid value
+     * @return true if the file is a valid file
+     */
+    public Boolean checkValidFile(final String filePath, final Options options, final String errorMessage) {
+        if (new File(filePath).isFile()) {
+            return true;
+        } else {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp(errorMessage, options);
+            System.exit(0);
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the given file path leads to a file
+     *
+     * @param peptides the given peptides
+     * @param options the options object
+     * @param errorMessage The message it should display if not a valid value
+     * @return true if the file is a valid file
+     */
+    public Boolean checkValidPeptides(final String[] peptides, final Options options, final String errorMessage) {
+        if (peptides.length > 50) {
+            HelpFormatter formatter = new HelpFormatter();
+            String error = "The number of peptides given at -g (or --peptides) is to high.\n"
+                    + "The maximum number of peptides at maximum is 50.";
+            formatter.printHelp(error, options);
+            System.exit(0);
+        }
+        HashSet<Character> AA = new HashSet<>(Arrays.asList('A', 'G', 'V', 'L', 'I', 'P',
+                'F', 'Y', 'W', 'S', 'T', 'C', 'M', 'N', 'Q', 'K', 'R', 'H', 'D', 'E'));
+        ArrayList<String> faultyPeptides = new ArrayList<>();
+        for (String peptide : peptides) {
+            for (int i = 0; i < peptide.length(); i++) {
+                if (!AA.contains(peptide.charAt(i))) {
+                    faultyPeptides.add(peptide);
+                    break;
+                }
+            }
+        }
+        if (faultyPeptides.isEmpty()) {
+            return true;
+        } else {
+            HelpFormatter formatter = new HelpFormatter();
+            String error = errorMessage + ": " + faultyPeptides.toString();
+            formatter.printHelp(error, options);
             System.exit(0);
         }
         return false;

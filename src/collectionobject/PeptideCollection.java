@@ -4,6 +4,7 @@
 package collectionobject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 /**
@@ -58,6 +59,19 @@ public class PeptideCollection {
      */
     public final String getPeptideSequence(final Integer peptidePosition) {
         return (String) new ArrayList(peptides.keySet()).get(peptidePosition);
+    }
 
+    /**
+     * Returns every peptide String in the list.
+     *
+     * @param indices all indices of the peptide.
+     * @return HashSet of peptides
+     */
+    public final HashSet<String> getAllPeptideSequences(final HashSet<Integer> indices) {
+        HashSet<String> peptideSet = new HashSet<>();
+        for (Integer i : indices) {
+            peptideSet.add(getPeptideSequence(i));
+        }
+        return peptideSet;
     }
 }

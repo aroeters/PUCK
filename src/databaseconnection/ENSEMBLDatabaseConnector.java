@@ -48,11 +48,19 @@ public class ENSEMBLDatabaseConnector {
                 + "ON t.translation_id = b.ensembl_id) a ON t.transcript_id = a.transcript_id) c ON g.gene_id=c.gene_id ORDER BY g.stable_id;";
 
         try (Connection con = sql2o.open()) {
-            return (con.createQuery(sqlQuery)
+            List<Query> query_result = (con.createQuery(sqlQuery)
                     .addColumnMapping("ENSG", "ENSG")
                     .addColumnMapping("uniprotID", "uniprotID")
                     .executeAndFetch(Query.class));
+            con.close();
+            return query_result;
+        } catch (Exception e) {
+            System.out.println("The ensembl databases are not responding (correctly).\n"
+                    + "Please try again a little later.\n"
+                    + "If this problem keeps occuring contact the developer.");
+            System.exit(0);
         }
+        return null;
     }
 
     /**
@@ -64,18 +72,18 @@ public class ENSEMBLDatabaseConnector {
         for (Query item : entries) {
             this.uniprotToENSG.put(item.getUniprotID(), item.getENSG());
         }
-        System.out.println("Finished collecting ids from ENSEMBL database");
+        System.out.println("Done...");
     }
     /**
      * Returns the ENSG according to the given uniprot ID.
-     * @param uniprot the uniprot id
+     * @param uniprotID the uniprot id
      * @return ENSG
      */
-    public final String getENSG(final String uniprot) {
-        if (uniprotToENSG.containsKey(uniprot)) {
-            return this.uniprotToENSG.get(uniprot);
+    public final String getENSG(final String uniprotID) {
+        if (uniprotToENSG.containsKey(uniprotID)) {
+            return this.uniprotToENSG.get(uniprotID);
         } else {
-            return uniprot;
+            return uniprotID;
         }
     }
 }

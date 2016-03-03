@@ -92,4 +92,12 @@ public interface LargeSequenceObject {
      * @return HashSet all_peptides
      */
     HashSet<Integer> getTotalPeptides();
+    /**
+     * True if the peptide in in the list of peptides of the protein.
+     *
+     * @param peptide String peptide sequence
+     * @param pepCol PeptideCollection
+     * @return true if peptide in peptides of protein
+     */
+    Boolean checkTotalPeptideString(final String peptide, final PeptideCollection pepCol);
 }

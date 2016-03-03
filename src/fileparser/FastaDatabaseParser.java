@@ -45,7 +45,7 @@ public class FastaDatabaseParser {
     /**
      * The peptide collection that will hold all peptides.
      */
-    private PeptideCollection peptideCollection = new PeptideCollection();
+    private final PeptideCollection peptideCollection = new PeptideCollection();
     /**
      * The number of cores to use.
      */
@@ -55,6 +55,14 @@ public class FastaDatabaseParser {
      * into account.
      */
     private final Integer maxProteins;
+    /**
+     * External peptide collection.
+     */
+    private PeptideCollection externalPepCol = null;
+    /**
+     * The Choice for output results is stored here.
+     */
+    private final String fileOption;
 
     /**
      * Constructor of the class.
@@ -68,7 +76,7 @@ public class FastaDatabaseParser {
      * @throws IOException when directory or files are not found
      */
     public FastaDatabaseParser(final String coreNumber, final Integer maxProteinNr, String resultFile,
-            final String database, final String digestionType, final Integer minPepLen)
+            final String database, final String digestionType, final Integer minPepLen, final String fileOption)
             throws IOException, Exception {
         this.databaseFile = database;
         this.digesterType = getDigester(digestionType, minPepLen);
@@ -80,6 +88,36 @@ public class FastaDatabaseParser {
         System.out.println("The final results will be placed in: " + resultFile);
         this.coreNr = coreNumber;
         this.maxProteins = maxProteinNr;
+        this.fileOption = fileOption;
+    }
+
+    /**
+     * Constructor of the class.
+     *
+     * @param coreNumber number of cores to use
+     * @param maxProteinNr maximum number of protein that can match to a protein
+     * @param resultFile path and filename for the result file
+     * @param database String of the database fastaFile
+     * @param digestionType type of digestion wanted
+     * @param minPepLen minimal length of the peptides to be used
+     * @param external a external peptide collection
+     * @throws IOException when directory or files are not found
+     */
+    public FastaDatabaseParser(final String coreNumber, final Integer maxProteinNr, String resultFile,
+            final String database, final String digestionType, final Integer minPepLen, final String fileOption, final PeptideCollection external)
+            throws IOException, Exception {
+        this.databaseFile = database;
+        this.digesterType = getDigester(digestionType, minPepLen);
+        if (!resultFile.endsWith("/")) {
+            resultFile = resultFile + "/";
+        }
+        String filename = database.split("/")[database.split("/").length - 1];
+        this.resultFileName = resultFile + filename.replace(".fasta", "");
+        System.out.println("The final results will be placed in: " + resultFile);
+        this.coreNr = coreNumber;
+        this.maxProteins = maxProteinNr;
+        this.fileOption = fileOption;
+        this.externalPepCol = external;
     }
 
     /**
@@ -91,6 +129,7 @@ public class FastaDatabaseParser {
      */
     public final ProteinCollection getProteinCollection()
             throws IOException, FileNotFoundException, Exception {
+        System.out.println("Collecting proteins from: " + this.databaseFile);
         ProteinCollection pc = new ProteinCollection();
         File file2Parse = new File(this.databaseFile);
         BufferedReader br = new BufferedReader(new FileReader(file2Parse.getPath()));
@@ -124,7 +163,7 @@ public class FastaDatabaseParser {
                 notValidProtein = false;
             }
         }
-        System.out.println("Finished collecting proteins from: " + this.databaseFile);
+        System.out.println("Done...");
         return pc;
     }
 
@@ -136,26 +175,35 @@ public class FastaDatabaseParser {
      * @throws Exception when an error occurs
      */
     public final void getPeptideUniqueness(final ProteinCollection proteinCollection) throws IOException, Exception {
-        ENSEMBLDatabaseConnector edc = new ENSEMBLDatabaseConnector();
-        long start = System.currentTimeMillis();
         // Get all matches per peptide with the given database
-        CallablePeptideMatcher searcher = new CallablePeptideMatcher(peptideCollection, proteinCollection);
-        Set<Future<LinkedList<String>>> set = searcher.matchPeptides(Integer.parseInt(this.coreNr));
-        // create a geneCollection which will hold the genes that are needed for the output
+        ENSEMBLDatabaseConnector edc = new ENSEMBLDatabaseConnector();
+        Set<Future<LinkedList<String>>> set;
+        PeptideCollection UsedPeptideCollection;
+        if (externalPepCol == null) {
+            UsedPeptideCollection = peptideCollection;
+        } else {
+            UsedPeptideCollection = externalPepCol;
+        }
+        set = getPeptideMatches(UsedPeptideCollection, proteinCollection);
+        long start = System.currentTimeMillis();
+        // Create a geneCollection which will hold the genes that are needed for the output
         GeneCollection geneCol = new GeneCollection();
+        // Create all variables that are needed
         HashMap<String, ArrayList<String>> geneMap;
         LinkedList<String> futureSet;
         Gene gene;
+        Integer peptideIndex;
         HashMap<String, Integer> excessivePeptides = new HashMap<>();
+        String proteinNameConverted;
+        ArrayList<String> proteinList;
+        // Parse all results
         for (Future<LinkedList<String>> future : set) {
             futureSet = future.get();
             if (futureSet.size() > this.maxProteins) {
                 excessivePeptides.put(futureSet.get(0), futureSet.size());
             } else {
-                Integer peptideIndex = peptideCollection.getPeptideIndex(futureSet.get(0));
+                peptideIndex = UsedPeptideCollection.getPeptideIndex(futureSet.get(0));
                 geneMap = new HashMap<>();
-                String proteinNameConverted;
-                ArrayList<String> proteinList;
                 for (String proteinName : futureSet.subList(1, futureSet.size())) {
                     proteinNameConverted = edc.getENSG(proteinName);
                     if (geneMap.containsKey(proteinNameConverted)) {
@@ -209,15 +257,30 @@ public class FastaDatabaseParser {
             }
         }
         long end = System.currentTimeMillis() - start;
-        System.out.println(end + "ms = " + end / 1000 + "s = " + end / 60000 + "m = " + end / 3600000 + "h");
-        CsvFileWriter cfw = new CsvFileWriter(this.resultFileName, peptideCollection, Integer.parseInt(this.coreNr));
+        System.out.println("Matching the peptides took " + end / 1000 + " seconds");
+        CsvFileWriter cfw;
+        cfw = new CsvFileWriter(this.resultFileName, UsedPeptideCollection, Integer.parseInt(this.coreNr), peptideCollection);
         // Write all results to the files
         cfw.writeExcessPeptides(excessivePeptides);
-        cfw.writeGeneUniquenessToCsv(geneCol);
-        cfw.writeProteinUniquenessToCsv(proteinCollection);
+        if (!geneCol.getGeneNames().isEmpty()) {
+            switch (this.fileOption) {
+                case "b":
+                    cfw.writeGeneUniquenessToCsv(geneCol);
+                    cfw.writeProteinUniquenessToCsv(proteinCollection);
+                    break;
+                case "g":
+                    cfw.writeGeneUniquenessToCsv(geneCol);
+                    break;
+                case "p":
+                    cfw.writeProteinUniquenessToCsv(proteinCollection);
+                    break;
+            }
+        }
     }
+
     /**
      * Get the enzyme for digestion to use.
+     *
      * @param digestionType method for digesting the peptides
      * @param minPepLen minimal peptide length
      * @return the Digester
@@ -249,5 +312,19 @@ public class FastaDatabaseParser {
                 return new NoDigester(minPepLen);
             }
         }
+    }
+
+    /**
+     * Returns a future set filled with all peptide matches
+     *
+     * @param pepCol a peptide collection
+     * @param proteinCollection the protein collection
+     * @return a future set of the peptide matches
+     * @throws Exception when an error occurs
+     */
+    public final Set<Future<LinkedList<String>>> getPeptideMatches(final PeptideCollection pepCol,
+            final ProteinCollection proteinCollection) throws Exception {
+        CallablePeptideMatcher searcher = new CallablePeptideMatcher(pepCol, proteinCollection);
+        return searcher.matchPeptides(Integer.parseInt(this.coreNr));
     }
 }

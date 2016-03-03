@@ -165,4 +165,14 @@ public class Protein implements LargeSequenceObject {
     public final Boolean checkTotalPeptide(final Integer peptide) {
         return this.all_peptides.contains(peptide);
     }
+    /**
+     * True if the peptide in in the list of peptides of the protein.
+     * @param peptide String peptide sequence
+     * @param pepCol PeptideCollection
+     * @return true if peptide in peptides of protein
+     */
+    @Override
+    public final Boolean checkTotalPeptideString(final String peptide, final PeptideCollection pepCol) {
+        return pepCol.getAllPeptideSequences(all_peptides).contains(peptide);
+    }
 }

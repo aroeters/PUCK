@@ -29,15 +29,34 @@ public class CsvFileWriter {
      */
     private final String dir;
     /**
-     * Contains all peptides.
+     * Contains all matched peptides.
      */
     private final PeptideCollection pepCol;
     /**
      * The number of cores to use.
      */
     private final Integer threadNr;
+    /**
+     * The PeptideCollection created by the digestion.
+     */
+    private PeptideCollection digestPeptides = null;
 
     /**
+     * Constructor of the class.
+     *
+     * @param directory where the file is written to.
+     * @param peptideCollection the peptideCollection
+     * @param thread the number of threads to use
+     * @param digestionPeptides the peptides created by digestion
+     */
+    public CsvFileWriter(final String directory, final PeptideCollection peptideCollection, final Integer thread,
+            final PeptideCollection digestionPeptides) {
+        this.dir = directory;
+        this.pepCol = peptideCollection;
+        this.threadNr = thread;
+        this.digestPeptides = digestionPeptides;
+    }
+        /**
      * Constructor of the class.
      *
      * @param directory where the file is written to.
@@ -65,8 +84,13 @@ public class CsvFileWriter {
         File file = new File(this.dir + "_geneUniqueness.csv");
         FileWriter fw = new FileWriter(file.getAbsoluteFile());
         try (BufferedWriter bw = new BufferedWriter(fw)) {
-            bw.write("Gene_name\tunique_peptides\tnon-unique_peptides\n");
-            CallableUniquessChecker searcher = new CallableUniquessChecker(pepCol, geneCol);
+            bw.write("Gene_name\tunique_peptides\tnon_unique_peptides\n");
+            CallableUniquessChecker searcher;
+            if (digestPeptides == null) {
+            searcher = new CallableUniquessChecker(pepCol, geneCol);
+            } else {
+            searcher = new CallableUniquessChecker(pepCol, geneCol, digestPeptides);
+            }
             Set<Future<HashMap<String, ArrayList<String>>>> set = searcher.matchPeptides(this.threadNr);
             ArrayList<String> temporary;
             for (Future<HashMap<String, ArrayList<String>>> future : set) {
@@ -96,6 +120,7 @@ public class CsvFileWriter {
                 bw.write("\n");
             }
         }
+        System.out.println("Done...");
     }
 
     /**
@@ -111,13 +136,17 @@ public class CsvFileWriter {
         FileWriter fw = new FileWriter(file.getAbsoluteFile());
         try (BufferedWriter bw = new BufferedWriter(fw)) {
             bw.write("Protein_name\tunique_peptides\tnon-unique_peptides\n");
-            CallableUniquessChecker searcher = new CallableUniquessChecker(pepCol, protCol);
+            CallableUniquessChecker searcher;
+            if (digestPeptides == null) {
+            searcher = new CallableUniquessChecker(pepCol, protCol);
+            } else {
+            searcher = new CallableUniquessChecker(pepCol, protCol, digestPeptides);
+            }
             Set<Future<HashMap<String, ArrayList<String>>>> set = searcher.matchPeptides(this.threadNr);
             ArrayList<String> temporary;
             for (Future<HashMap<String, ArrayList<String>>> future : set) {
                 HashMap<String, ArrayList<String>> futureMap = future.get();
                 if (futureMap.get("unique").isEmpty() && futureMap.get("non_unique").isEmpty()) {
-                    continue;
                 } else {
                     temporary = new ArrayList<>();
                     temporary.addAll(futureMap.keySet());
@@ -145,6 +174,7 @@ public class CsvFileWriter {
                 }
             }
         }
+        System.out.println("Done...");
     }
 
     /**
@@ -164,5 +194,6 @@ public class CsvFileWriter {
                 bw.write(peptide + "\t" + excessPeptides.get(peptide) + "\n");
             }
         }
+        System.out.println("Done...");
     }
 }

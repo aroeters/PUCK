@@ -187,6 +187,11 @@ public class CMDArgumentParser {
         } else {
             arguments.put("o", "b");
         }
+        if (cmd.hasOption("p") || cmd.hasOption("peptide_file") && cmd.hasOption("g") || cmd.hasOption("peptides")) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("Please do not provide a peptide file (-p, --peptide_file) and command line peptides (-g, --peptides) at the same time.", options);
+            System.exit(0);
+        }
         return arguments;
     }
 

@@ -72,6 +72,7 @@ public class FastaDatabaseParser {
      * @param resultFile path and filename for the result file
      * @param database String of the database fastaFile
      * @param digestionType type of digestion wanted
+     * @param fileOption choice of output
      * @param minPepLen minimal length of the peptides to be used
      * @throws IOException when directory or files are not found
      */
@@ -100,6 +101,7 @@ public class FastaDatabaseParser {
      * @param database String of the database fastaFile
      * @param digestionType type of digestion wanted
      * @param minPepLen minimal length of the peptides to be used
+     * @param fileOption choice of output
      * @param external a external peptide collection
      * @throws IOException when directory or files are not found
      */
@@ -163,7 +165,7 @@ public class FastaDatabaseParser {
                 notValidProtein = false;
             }
         }
-        System.out.println("Done...");
+        System.out.println(pc.getProteinNames().size() +  " proteins collected");
         return pc;
     }
 

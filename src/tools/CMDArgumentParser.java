@@ -90,7 +90,7 @@ public class CMDArgumentParser {
                 .hasArg()
                 .create("p"));
         options.addOption(OptionBuilder.withLongOpt("peptides")
-                .withDescription("Multiple peptides seperated by spaces. (e.g. peptide1 ... peptide25)\n")
+                .withDescription("Multiple peptides seperated by spaces. (e.g. peptide1 ... peptide50)\n")
                 .hasArgs(Option.UNLIMITED_VALUES)
                 .create("g"));
         options.addOption(OptionBuilder.withLongOpt("file_options")

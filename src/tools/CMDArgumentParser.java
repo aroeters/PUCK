@@ -94,9 +94,9 @@ public class CMDArgumentParser {
                 .hasArgs(Option.UNLIMITED_VALUES)
                 .create("g"));
         options.addOption(OptionBuilder.withLongOpt("file_options")
-                .withDescription("Choose which filea you want:\n"
+                .withDescription("Choose which file you want:\n"
                         + "\tOnly match genes = g\n"
-                        + "\tOnly match peptides = p\n"
+                        + "\tOnly match proteins = p\n"
                         + "\tBoth = b (default)")
                 .hasArgs(Option.UNLIMITED_VALUES)
                 .create("o"));

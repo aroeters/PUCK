@@ -187,7 +187,7 @@ public class CMDArgumentParser {
         } else {
             arguments.put("o", "b");
         }
-        if (cmd.hasOption("p") || cmd.hasOption("peptide_file") && cmd.hasOption("g") || cmd.hasOption("peptides")) {
+        if (cmd.hasOption("p") && cmd.hasOption("g")) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("Please do not provide a peptide file (-p, --peptide_file) and command line peptides (-g, --peptides) at the same time.", options);
             System.exit(0);
@@ -203,7 +203,7 @@ public class CMDArgumentParser {
      * @param errorMessage The message it should display if not a valid value
      * @return true if option a/threads is a valid value
      */
-    public boolean checkValidInteger(final String optionValue, final Options options, final String errorMessage) {
+    public final boolean checkValidInteger(final String optionValue, final Options options, final String errorMessage) {
         try {
             Integer check = Integer.parseInt(optionValue);
         } catch (IllegalArgumentException IAE) {
@@ -222,7 +222,7 @@ public class CMDArgumentParser {
      * @param errorMessage The message it should display if not a valid value
      * @return true if option value is a valid directory
      */
-    public boolean checkValidDirectory(final String optionValue, final Options options, final String errorMessage) {
+    public final boolean checkValidDirectory(final String optionValue, final Options options, final String errorMessage) {
         File file = new File(optionValue);
         if (file.isDirectory()) {
             return true;
@@ -234,7 +234,7 @@ public class CMDArgumentParser {
         return false;
     }
 
-    public boolean checkFileOptions(final String optionValue, final Options options, final String errorMessage) {
+    public final boolean checkFileOptions(final String optionValue, final Options options, final String errorMessage) {
         HashSet<String> optionSet = new HashSet<>(Arrays.asList("p", "g", "b"));
         if (optionSet.contains(optionValue)) {
             return true;
@@ -259,7 +259,7 @@ public class CMDArgumentParser {
      * @throws FileNotFoundException if the file is not found.
      * @throws IOException if an error occurs during in or output handling
      */
-    public boolean checkValidDatabaseFile(final String optionValue, final Options options, final String errorMessage)
+    public final boolean checkValidDatabaseFile(final String optionValue, final Options options, final String errorMessage)
             throws FileNotFoundException, IOException {
         File file = new File(optionValue);
         if (file.isFile() && optionValue.endsWith(".fa") || optionValue.endsWith(".fasta")) {
@@ -296,7 +296,7 @@ public class CMDArgumentParser {
      * @param errorMessage The message it should display if not a valid value
      * @return true if the file is a valid file
      */
-    public Boolean checkValidFile(final String filePath, final Options options, final String errorMessage) {
+    public final boolean checkValidFile(final String filePath, final Options options, final String errorMessage) {
         if (new File(filePath).isFile()) {
             return true;
         } else {
@@ -315,7 +315,7 @@ public class CMDArgumentParser {
      * @param errorMessage The message it should display if not a valid value
      * @return true if the file is a valid file
      */
-    public Boolean checkValidPeptides(final String[] peptides, final Options options, final String errorMessage) {
+    public final boolean checkValidPeptides(final String[] peptides, final Options options, final String errorMessage) {
         if (peptides.length > 50) {
             HelpFormatter formatter = new HelpFormatter();
             String error = "The number of peptides given at -g (or --peptides) is to high.\n"

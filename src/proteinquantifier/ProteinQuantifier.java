@@ -54,7 +54,7 @@ public class ProteinQuantifier {
                     externalPepCol);
         } else {
             PeptideFileParser pfp = new PeptideFileParser();
-            PeptideCollection externalPepCol = pfp.getPeptideCollectionByInput(cmdArguments.get("p").toString());
+            PeptideCollection externalPepCol = pfp.getPeptideCollectionByFile(cmdArguments.get("p").toString());
             databaseParser = new FastaDatabaseParser(
                     cmdArguments.get("a").toString(),
                     Integer.parseInt(cmdArguments.get("b").toString()),

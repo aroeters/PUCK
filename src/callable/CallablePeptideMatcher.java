@@ -105,7 +105,7 @@ public class CallablePeptideMatcher {
         }
         // shuts down the threads or else the will keep running
         pool.shutdown();
-        
+
         return set;
     }
 }

@@ -97,12 +97,11 @@ public class CallableUniquessChecker {
      * @return the protein Collection
      * @throws Exception when an Error occurs
      */
-    public final Set<Future<HashMap<String, ArrayList<String>>>> matchPeptides(final Integer threadNumber) throws Exception {
+    public final Set<Future<HashMap<String, ArrayList<String>>>> checkPeptideUniqueness(final Integer threadNumber) throws Exception {
         // Creates a thread pool with the max number of threads that can be used.
         ExecutorService pool = Executors.newScheduledThreadPool(threadNumber);
         // creates a set with future objects which can be accessed after the all processes are completed
         Set<Future<HashMap<String, ArrayList<String>>>> set = new HashSet<>();
-        
         Callable<HashMap<String, ArrayList<String>>> callable = null;
         Future<HashMap<String, ArrayList<String>>> future;
         if (peptideCheckCollection == null) {
@@ -122,11 +121,11 @@ public class CallableUniquessChecker {
         pool.shutdown();
         return set;
     }
-
     /**
      * Subclass that can be called and used in a thread pool.
      */
     public static class CallableChecker implements Callable {
+        
 
         /**
          * The gene object.
@@ -202,6 +201,7 @@ public class CallableUniquessChecker {
          */
         public CallableStringChecker(final LargeSequenceObject seqObject, final PeptideCollection pepCol,
                 final PeptideCollection AllPeptides) {
+//            System.out.println("Using callabalStringChecker");
             this.sobject = seqObject;
             this.pepCollection = pepCol;
             this.peptideCheckCollection = AllPeptides;

@@ -56,7 +56,8 @@ public class CsvFileWriter {
         this.threadNr = thread;
         this.digestPeptides = digestionPeptides;
     }
-        /**
+
+    /**
      * Constructor of the class.
      *
      * @param directory where the file is written to.
@@ -87,11 +88,11 @@ public class CsvFileWriter {
             bw.write("Gene_name\tunique_peptides\tnon_unique_peptides\n");
             CallableUniquessChecker searcher;
             if (digestPeptides == null) {
-            searcher = new CallableUniquessChecker(pepCol, geneCol);
+                searcher = new CallableUniquessChecker(pepCol, geneCol);
             } else {
-            searcher = new CallableUniquessChecker(pepCol, geneCol, digestPeptides);
+                searcher = new CallableUniquessChecker(pepCol, geneCol, digestPeptides);
             }
-            Set<Future<HashMap<String, ArrayList<String>>>> set = searcher.matchPeptides(this.threadNr);
+            Set<Future<HashMap<String, ArrayList<String>>>> set = searcher.checkPeptideUniqueness(this.threadNr);
             ArrayList<String> temporary;
             for (Future<HashMap<String, ArrayList<String>>> future : set) {
                 HashMap<String, ArrayList<String>> futureMap = future.get();
@@ -138,11 +139,11 @@ public class CsvFileWriter {
             bw.write("Protein_name\tunique_peptides\tnon-unique_peptides\n");
             CallableUniquessChecker searcher;
             if (digestPeptides == null) {
-            searcher = new CallableUniquessChecker(pepCol, protCol);
+                searcher = new CallableUniquessChecker(pepCol, protCol);
             } else {
-            searcher = new CallableUniquessChecker(pepCol, protCol, digestPeptides);
+                searcher = new CallableUniquessChecker(pepCol, protCol, digestPeptides);
             }
-            Set<Future<HashMap<String, ArrayList<String>>>> set = searcher.matchPeptides(this.threadNr);
+            Set<Future<HashMap<String, ArrayList<String>>>> set = searcher.checkPeptideUniqueness(this.threadNr);
             ArrayList<String> temporary;
             for (Future<HashMap<String, ArrayList<String>>> future : set) {
                 HashMap<String, ArrayList<String>> futureMap = future.get();

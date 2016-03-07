@@ -261,7 +261,11 @@ public class FastaDatabaseParser {
         long end = System.currentTimeMillis() - start;
         System.out.println("Matching the peptides took " + end / 1000 + " seconds");
         CsvFileWriter cfw;
-        cfw = new CsvFileWriter(this.resultFileName, UsedPeptideCollection, Integer.parseInt(this.coreNr), peptideCollection);
+        if (externalPepCol == null) {
+            cfw = new CsvFileWriter(this.resultFileName, UsedPeptideCollection, Integer.parseInt(this.coreNr));
+        } else {
+            cfw = new CsvFileWriter(this.resultFileName, UsedPeptideCollection, Integer.parseInt(this.coreNr), peptideCollection);
+        }
         // Write all results to the files
         cfw.writeExcessPeptides(excessivePeptides);
         if (!geneCol.getGeneNames().isEmpty()) {

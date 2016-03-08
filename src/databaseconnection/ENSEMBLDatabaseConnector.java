@@ -21,7 +21,7 @@ public class ENSEMBLDatabaseConnector {
     /**
      * Contains the Uniprot to ENSG id conversion.
      */
-    private final HashMap<String, String> uniprotToENSG = new HashMap<>();
+    private final HashMap<String, String> otherIDToENSG = new HashMap<>();
 
     /**
      * Initiates the class.
@@ -30,7 +30,7 @@ public class ENSEMBLDatabaseConnector {
      */
     public ENSEMBLDatabaseConnector() throws Exception {
         this.sql2o = new Sql2o("jdbc:mysql://ensembldb.ensembl.org:5306/homo_sapiens_core_83_38", "anonymous", "");
-        getUniprotToENSGDB();
+        getIDToENSGDB();
     }
 
     /**
@@ -39,7 +39,7 @@ public class ENSEMBLDatabaseConnector {
      * @return List<Query>
      * @throws Exception when an error occurs
      */
-    private List<Query> getQueries() throws Exception {
+    private List<Query> getUniprotQueries() throws Exception {
         System.out.println("Getting Uniprot ids from ensemble database");
         String sqlQuery = "SELECT g.stable_id as 'ENSG', c.dbprimary_acc as 'uniprotID' FROM gene g JOIN (SELECT t.gene_id, a.dbprimary_acc FROM transcript t JOIN "
                 + "(SELECT t.transcript_id, b.dbprimary_acc FROM translation t JOIN "
@@ -50,7 +50,7 @@ public class ENSEMBLDatabaseConnector {
         try (Connection con = sql2o.open()) {
             List<Query> query_result = (con.createQuery(sqlQuery)
                     .addColumnMapping("ENSG", "ENSG")
-                    .addColumnMapping("uniprotID", "uniprotID")
+                    .addColumnMapping("uniprotID", "otherID")
                     .executeAndFetch(Query.class));
             con.close();
             return query_result;
@@ -62,15 +62,45 @@ public class ENSEMBLDatabaseConnector {
         }
         return null;
     }
+    
+        /**
+     * Returns a list with the query in it.
+     *
+     * @return List<Query>
+     * @throws Exception when an error occurs
+     */
+    private List<Query> getENSTQueries() throws Exception {
+        System.out.println("Getting ENST from ensemble database");
+        String sqlQuery = "SELECT g.stable_id as 'ENSG', t.stable_id as 'ENST' FROM transcript t, gene g where t.gene_id = g.gene_id;";
 
+        try (Connection con = sql2o.open()) {
+            List<Query> query_result = (con.createQuery(sqlQuery)
+                    .addColumnMapping("ENSG", "ENSG")
+                    .addColumnMapping("ENST", "otherID")
+                    .executeAndFetch(Query.class));
+            con.close();
+            return query_result;
+        } catch (Exception e) {
+            System.out.println("The ensembl databases are not responding (correctly).\n"
+                    + "Please try again a little later.\n"
+                    + "If this problem keeps occuring contact the developer.");
+            System.exit(0);
+        }
+        return null;
+    }
+    
     /**
      * Fills the Uniprot to ENSG conversion HashMap.
      * @throws Exception when an error occurs
      */
-    private void getUniprotToENSGDB() throws Exception {
-        List<Query> entries = getQueries();
+    private void getIDToENSGDB() throws Exception {
+        List<Query> entries = getUniprotQueries();
         for (Query item : entries) {
-            this.uniprotToENSG.put(item.getUniprotID(), item.getENSG());
+            this.otherIDToENSG.put(item.getOtherID(), item.getENSG());
+        }
+        List<Query> ENST = getENSTQueries();
+        for (Query item : ENST) {
+            this.otherIDToENSG.put(item.getOtherID(), item.getENSG());
         }
         System.out.println("Done...");
     }
@@ -80,8 +110,8 @@ public class ENSEMBLDatabaseConnector {
      * @return ENSG
      */
     public final String getENSG(final String uniprotID) {
-        if (uniprotToENSG.containsKey(uniprotID)) {
-            return this.uniprotToENSG.get(uniprotID);
+        if (otherIDToENSG.containsKey(uniprotID)) {
+            return this.otherIDToENSG.get(uniprotID);
         } else {
             return uniprotID;
         }

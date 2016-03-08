@@ -13,9 +13,9 @@ public class Query {
      */
     private String ENSG;
     /**
-     * Contains the uniprotID collected from the database.
+     * Contains the otherID collected from the database.
      */
-    private String uniprotID;
+    private String otherID;
     /**
      * Returns the ENSG stable id.
      * @return String ENSG
@@ -31,23 +31,23 @@ public class Query {
         this.ENSG = ENSG;
     }
     /**
-     * Returns the uniprotID that is linked to the ENSG.
-     * @return String uniprotID
+     * Returns the otherID that is linked to the ENSG.
+     * @return String otherID
      */
-    public final String getUniprotID() {
-        return uniprotID;
+    public final String getOtherID() {
+        return otherID;
     }
     /**
-     * Sets the uniprotID linked to the ENSG.
-     * @param UniprotID String uniprotID
+     * Sets the otherID linked to the ENSG.
+     * @param UniprotID String otherID
      */
-    public final void setUniprotID(final String UniprotID) {
-        this.uniprotID = UniprotID;
+    public final void setOtherID(final String UniprotID) {
+        this.otherID = UniprotID;
     }
 
     @Override
     public String toString() {
-        return "Query{" + "ENSG=" + ENSG + ", uniprotID=" + uniprotID + '}';
+        return "Query{" + "ENSG=" + ENSG + ", otherID=" + otherID + '}';
     }
     
 }

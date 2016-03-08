@@ -62,8 +62,8 @@ public class ENSEMBLDatabaseConnector {
         }
         return null;
     }
-    
-        /**
+
+    /**
      * Returns a list with the query in it.
      *
      * @return List<Query>
@@ -88,9 +88,10 @@ public class ENSEMBLDatabaseConnector {
         }
         return null;
     }
-    
+
     /**
-     * Fills the Uniprot to ENSG conversion HashMap.
+     * Fills the ID to ENSG conversion HashMap.
+     *
      * @throws Exception when an error occurs
      */
     private void getIDToENSGDB() throws Exception {
@@ -104,16 +105,18 @@ public class ENSEMBLDatabaseConnector {
         }
         System.out.println("Done...");
     }
+
     /**
-     * Returns the ENSG according to the given uniprot ID.
-     * @param uniprotID the uniprot id
+     * Returns the ENSG according to the given lookupID.
+     *
+     * @param lookupID the lookupID
      * @return ENSG
      */
-    public final String getENSG(final String uniprotID) {
-        if (otherIDToENSG.containsKey(uniprotID)) {
-            return this.otherIDToENSG.get(uniprotID);
+    public final String getENSG(final String lookupID) {
+        if (otherIDToENSG.containsKey(lookupID)) {
+            return this.otherIDToENSG.get(lookupID);
         } else {
-            return uniprotID;
+            return lookupID;
         }
     }
 }

@@ -11,12 +11,12 @@ peptide. (default = 100)
 -c, --result_dir  The path to the directory to place the results in. (default = ./)
 
 -d, --digestion  The type of digestion to use, options:</br>
-0: No digestion (default)
-1: Trypsin Conservative
-2: Trypsin
-3: Pepsin high PH (PH > 2)
-4: Pepsin (PH 1.3)
-5: Chemotrypsin high specificity
+0: No digestion (default)</br>
+1: Trypsin Conservative</br>
+2: Trypsin</br>
+3: Pepsin high PH (PH > 2)</br>
+4: Pepsin (PH 1.3)</br>
+5: Chemotrypsin high specificity</br>
 6: Chemotrypsin low specificity
 
 -e, --min_peptide_length

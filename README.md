@@ -1,7 +1,7 @@
 # ProteinQuantifier
 Protein quantifier tool for peptide to gene and protein uniqueness
 
-Options:
+<h2>Options:</h2>
 
 -a, --threads:</br>
 The amount of threads to use. (default = 4 threads)

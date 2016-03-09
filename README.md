@@ -37,10 +37,10 @@ Help function, shows all options
 
 -o, --file_options:</br>
 Choose which output you want: (faster if only one is chosen)</br>
-    g: match peptides and give gene output.</br>
-    p: match peptides and give protein output.</br>
-    b: match peptides and give both output (default)
+&emsp;&emsp;g: match peptides and give gene output.</br>
+&emsp;&emsp;p: match peptides and give protein output.</br>
+&emsp;&emsp;b: match peptides and give both output (default)
 
 -p, --peptide_file:</br>
-Give peptides to match for in a seperate file.
+Give peptides to match for in a seperate file.</br>
 The file should have each peptide on a seperate line.

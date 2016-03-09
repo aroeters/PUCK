@@ -13,7 +13,8 @@ peptide. (default = 100)
 -c, --result_dir:</br>
 The path to the directory to place the results in. (default = ./)
 
--d, --digestion: The type of digestion to use, options:</br>
+-d, --digestion:</br>
+The type of digestion to use, options:</br>
 &emsp;&emsp;0: No digestion (default)</br>
 &emsp;&emsp;1: Trypsin Conservative</br>
 &emsp;&emsp;2: Trypsin</br>

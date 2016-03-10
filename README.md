@@ -1,4 +1,4 @@
-# ProteinQuantifier
+# PUCK (Peptide Uniqueness ChecKer)
 Protein quantifier tool for peptide to gene and protein uniqueness
 
 <h2>Options:</h2>

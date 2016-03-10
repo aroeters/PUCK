@@ -6,6 +6,7 @@ package collectionobject;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 /**
  *
@@ -17,6 +18,10 @@ public class PeptideCollection {
      * The collection of all peptides.
      */
     private final LinkedHashMap<String, Integer> peptides = new LinkedHashMap<>();
+    /**
+     * LinkedList that holds all the keys of the HashMap
+     */
+    LinkedList<String> LinkedHashMapKeys = new LinkedList<>();
     /**
      * Number of peptides in the HashMap peptides.
      */
@@ -41,6 +46,7 @@ public class PeptideCollection {
     public final Integer addPeptide(final String peptide) {
         if (!peptides.containsKey(peptide)) {
             this.peptides.put(peptide, peptideNr);
+            this.LinkedHashMapKeys.add(peptide);
             peptideNr++;
             return peptideNr;
         }
@@ -58,7 +64,7 @@ public class PeptideCollection {
      * @return String of the peptideSequence
      */
     public final String getPeptideSequence(final Integer peptidePosition) {
-        return (String) new ArrayList(peptides.keySet()).get(peptidePosition);
+        return this.LinkedHashMapKeys.get(peptidePosition);
     }
 
     /**

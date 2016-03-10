@@ -113,9 +113,9 @@ public class CsvFileWriter {
                 bw.write("\t");
                 for (String peptide : futureMap.get("non_unique")) {
                     if (futureMap.get("non_unique").indexOf(peptide) == futureMap.get("non_unique").size() - 1) {
-                        bw.write(peptide);
+                        bw.write(peptide.toLowerCase());
                     } else {
-                        bw.write(peptide + ";");
+                        bw.write(peptide.toLowerCase() + ";");
                     }
                 }
                 bw.write("\n");
@@ -166,9 +166,9 @@ public class CsvFileWriter {
                     bw.write("\t");
                     for (String peptide : futureMap.get("non_unique")) {
                         if (futureMap.get("non_unique").indexOf(peptide) == futureMap.get("non_unique").size() - 1) {
-                            bw.write(peptide);
+                            bw.write(peptide.toLowerCase());
                         } else {
-                            bw.write(peptide + ";");
+                            bw.write(peptide.toLowerCase() + ";");
                         }
                     }
                     bw.write("\n");

@@ -58,6 +58,7 @@ public class Protein implements LargeSequenceObject {
      *
      * @return String AA sequence
      */
+    @Override
     public final String getSequence() {
         return this.sequence;
     }
@@ -67,6 +68,7 @@ public class Protein implements LargeSequenceObject {
      *
      * @param newSequence String AA sequence
      */
+    @Override
     public final void setSequence(final String newSequence) {
         if (this.sequence == null) {
             this.sequence = newSequence;

@@ -102,7 +102,7 @@ public class CallableUniquessChecker {
         ExecutorService pool = Executors.newScheduledThreadPool(threadNumber);
         // creates a set with future objects which can be accessed after the all processes are completed
         Set<Future<HashMap<String, ArrayList<String>>>> set = new HashSet<>();
-        Callable<HashMap<String, ArrayList<String>>> callable = null;
+        Callable<HashMap<String, ArrayList<String>>> callable;
         Future<HashMap<String, ArrayList<String>>> future;
         if (peptideCheckCollection == null) {
             for (Object instance : this.object) {

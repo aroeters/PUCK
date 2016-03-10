@@ -1,5 +1,8 @@
 # PUCK (Peptide Uniqueness ChecKer)
-Protein quantifier tool for peptide to gene and protein uniqueness
+
+Tool for determening unique peptides within a protein database in fasta format.
+All proteins will be digested by the chosen enzyme and the peptides retrieved will be matched to
+the given protein database to retrieve the peptide uniqueness.
 
 <h2>Options:</h2>
 

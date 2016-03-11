@@ -119,4 +119,11 @@ public class ENSEMBLDatabaseConnector {
             return lookupID;
         }
     }
+    /**
+     * Returns the HashMap with all conversions in it
+     * @return HashMap<String, String>
+     */
+    public HashMap<String, String> getIDConversion() {
+        return this.otherIDToENSG;
+    }
 }

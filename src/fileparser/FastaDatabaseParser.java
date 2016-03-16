@@ -23,9 +23,6 @@ import collectionobject.Protein;
 import collectionobject.ProteinCollection;
 import java.util.Arrays;
 import java.util.HashMap;
-import javax.swing.JFrame;
-import javax.swing.JProgressBar;
-import outputflushdemo.OutputFlushDemo;
 
 /**
  *
@@ -164,9 +161,9 @@ public class FastaDatabaseParser {
                         name = line.split("\\|")[1];
                     } else if (line.startsWith(">EN")) {
                         if (line.contains("_")) {
-                            name = line.split("_")[0];
+                            name = line.split("_")[0].replace(">", "");
                         } else {
-                            name = line.trim();
+                            name = line.trim().replace(">", "");
                         }
                     } else {
                         name = line.substring(1).replaceAll("\\s", "");

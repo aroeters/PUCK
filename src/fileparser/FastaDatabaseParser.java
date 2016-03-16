@@ -23,6 +23,9 @@ import collectionobject.Protein;
 import collectionobject.ProteinCollection;
 import java.util.Arrays;
 import java.util.HashMap;
+import javax.swing.JFrame;
+import javax.swing.JProgressBar;
+import outputflushdemo.OutputFlushDemo;
 
 /**
  *
@@ -115,11 +118,11 @@ public class FastaDatabaseParser {
         }
         String filename = database.split("/")[database.split("/").length - 1];
         this.resultFileName = resultFile + filename.replace(".fasta", "");
-        System.out.println("The final results will be placed in: " + resultFile);
         this.coreNr = coreNumber;
         this.maxProteins = maxProteinNr;
         this.fileOption = fileOption;
         this.externalPepCol = external;
+        System.out.println("The final results will be placed in: " + resultFile);
     }
 
     /**
@@ -139,6 +142,7 @@ public class FastaDatabaseParser {
         String name = "";
         Protein protein = new Protein();
         Boolean notValidProtein = false;
+
         while ((line = br.readLine()) != null) {
             if (!notValidProtein) {
                 if (line.startsWith(">NEWP") || line.startsWith(">GENSCAN")) {
@@ -154,6 +158,8 @@ public class FastaDatabaseParser {
                     }
                     if (line.startsWith(">sp") || line.startsWith(">tr")) {
                         name = line.split("\\|")[1];
+                    } else if (line.startsWith(">EN")) {
+                        name = line.trim();
                     } else {
                         name = line.substring(1).replaceAll("\\s", "");
                     }
@@ -165,7 +171,7 @@ public class FastaDatabaseParser {
                 notValidProtein = false;
             }
         }
-        System.out.println(pc.getProteinNames().size() +  " proteins collected");
+        System.out.println(pc.getProteinNames().size() + " proteins collected");
         return pc;
     }
 

@@ -117,7 +117,11 @@ public class FastaDatabaseParser {
             resultFile = resultFile + "/";
         }
         String filename = database.split("/")[database.split("/").length - 1];
-        this.resultFileName = resultFile + filename.replace(".fasta", "");
+        if (filename.contains(".fasta")) {
+            this.resultFileName = resultFile + filename.replace(".fasta", "");
+        } else {
+            this.resultFileName = resultFile + filename.replace(".fa", "");
+        }
         this.coreNr = coreNumber;
         this.maxProteins = maxProteinNr;
         this.fileOption = fileOption;

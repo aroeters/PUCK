@@ -147,7 +147,7 @@ public class FastaDatabaseParser {
             if (!notValidProtein) {
                 if (line.startsWith(">NEWP") || line.startsWith(">GENSCAN")) {
                     notValidProtein = true;
-                } else if (line.startsWith(">") && !pc.getProteinNames().contains(line.substring(1))) {
+                } else if (line.startsWith(">")) {
                     if (protein.getName() != null) {
                         ArrayList<String> peptides = this.digesterType.digest(protein.getSequence());
                         for (String peptide : peptides) {
@@ -159,7 +159,11 @@ public class FastaDatabaseParser {
                     if (line.startsWith(">sp") || line.startsWith(">tr")) {
                         name = line.split("\\|")[1];
                     } else if (line.startsWith(">EN")) {
-                        name = line.trim();
+                        if (line.contains("_")) {
+                            name = line.split("_")[0];
+                        } else {
+                            name = line.trim();
+                        }
                     } else {
                         name = line.substring(1).replaceAll("\\s", "");
                     }

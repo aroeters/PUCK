@@ -34,7 +34,11 @@ public class ProteinCollection {
      */
     public final void addProtein(final String proteinName,
             final Protein protein) {
-        this.proteins.put(proteinName, protein);
+        if (!proteins.containsKey(proteinName)) {
+            this.proteins.put(proteinName, protein);
+        } else {
+            proteins.get(proteinName).addTotalPeptides(protein.getTotalPeptides());
+        }
     }
 
     /**

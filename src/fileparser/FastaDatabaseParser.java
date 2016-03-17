@@ -74,13 +74,15 @@ public class FastaDatabaseParser {
      * @param digestionType type of digestion wanted
      * @param fileOption choice of output
      * @param minPepLen minimal length of the peptides to be used
+     * @param mc the number of miscleavages to use
      * @throws IOException when directory or files are not found
      */
     public FastaDatabaseParser(final String coreNumber, final Integer maxProteinNr, String resultFile,
-            final String database, final String digestionType, final Integer minPepLen, final String fileOption)
+            final String database, final String digestionType, final Integer minPepLen, final String fileOption,
+            final Integer mc)
             throws IOException, Exception {
         this.databaseFile = database;
-        this.digesterType = getDigester(digestionType, minPepLen);
+        this.digesterType = getDigester(digestionType, minPepLen, mc);
         if (!resultFile.endsWith("/")) {
             resultFile = resultFile + "/";
         }
@@ -103,13 +105,15 @@ public class FastaDatabaseParser {
      * @param minPepLen minimal length of the peptides to be used
      * @param fileOption choice of output
      * @param external a external peptide collection
+     * @param mc the number of miscleavages to use
      * @throws IOException when directory or files are not found
      */
     public FastaDatabaseParser(final String coreNumber, final Integer maxProteinNr, String resultFile,
-            final String database, final String digestionType, final Integer minPepLen, final String fileOption, final PeptideCollection external)
+            final String database, final String digestionType, final Integer minPepLen, final String fileOption, 
+            final PeptideCollection external, final Integer mc)
             throws IOException, Exception {
         this.databaseFile = database;
-        this.digesterType = getDigester(digestionType, minPepLen);
+        this.digesterType = getDigester(digestionType, minPepLen, mc);
         if (!resultFile.endsWith("/")) {
             resultFile = resultFile + "/";
         }
@@ -302,31 +306,31 @@ public class FastaDatabaseParser {
      * @param minPepLen minimal peptide length
      * @return the Digester
      */
-    private Digester getDigester(final String digestionType, final Integer minPepLen) {
+    private Digester getDigester(final String digestionType, final Integer minPepLen, final Integer mc) {
         switch (digestionType) {
             case "0": {
-                return new NoDigester(minPepLen);
+                return new NoDigester(minPepLen, mc);
             }
             case "1": {
-                return new TrypsinDigesterConservative(minPepLen);
+                return new TrypsinDigesterConservative(minPepLen, mc);
             }
             case "2": {
-                return new TrypsinDigester(minPepLen);
+                return new TrypsinDigester(minPepLen, mc);
             }
             case "3": {
-                return new PepsinDigesterHigherPH(minPepLen);
+                return new PepsinDigesterHigherPH(minPepLen, mc);
             }
             case "4": {
-                return new PepsinDigesterLowPH(minPepLen);
+                return new PepsinDigesterLowPH(minPepLen, mc);
             }
             case "5": {
-                return new ChemotrypsinDigesterHighSpecific(minPepLen);
+                return new ChemotrypsinDigesterHighSpecific(minPepLen, mc);
             }
             case "6": {
-                return new ChemotrypsinDigesterLowSpecific(minPepLen);
+                return new ChemotrypsinDigesterLowSpecific(minPepLen, mc);
             }
             default: {
-                return new NoDigester(minPepLen);
+                return new NoDigester(minPepLen, mc);
             }
         }
     }

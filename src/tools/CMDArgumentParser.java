@@ -98,8 +98,12 @@ public class CMDArgumentParser {
                         + "\tOnly match genes = g\n"
                         + "\tOnly match proteins = p\n"
                         + "\tBoth = b (default)")
-                .hasArgs(Option.UNLIMITED_VALUES)
+                .hasArgs()
                 .create("o"));
+        options.addOption(OptionBuilder.withLongOpt("miscleavages")
+                .withDescription("The number of miscleavages to use. (default = 0)")
+                .hasArgs()
+                .create("m"));
 
         CommandLineParser parser = new BasicParser();
         CommandLine cmd = parser.parse(options, args);
@@ -187,11 +191,19 @@ public class CMDArgumentParser {
         } else {
             arguments.put("o", "b");
         }
+        if (cmd.hasOption("m") || cmd.hasOption("miscleavages")) {
+            if (checkMC(cmd.getOptionValue("m"), options, "The number of miscleavages used (max = 3)")) {
+                arguments.put("m", cmd.getOptionValue("m"));
+            }
+        } else {
+            arguments.put("m", "0");
+        }
         if (cmd.hasOption("p") && cmd.hasOption("g")) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("Please do not provide a peptide file (-p, --peptide_file) and command line peptides (-g, --peptides) at the same time.", options);
             System.exit(0);
         }
+
         return arguments;
     }
 
@@ -323,7 +335,7 @@ public class CMDArgumentParser {
             formatter.printHelp(error, options);
             System.exit(0);
         }
-        HashSet<Character> AA = new HashSet<>(Arrays.asList('A', 'C',  'D', 'E', 'F', 'G' , 'H', 'I', 'K', 'L', 'M', 'N', 'P',
+        HashSet<Character> AA = new HashSet<>(Arrays.asList('A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P',
                 'Q', 'R', 'S', 'T', 'V', 'W', 'Y'));
         ArrayList<String> faultyPeptides = new ArrayList<>();
         for (String peptide : peptides) {
@@ -343,5 +355,27 @@ public class CMDArgumentParser {
             System.exit(0);
         }
         return false;
+    }
+
+    /**
+     * Checks if the given file path leads to a file
+     *
+     * @param mc the number of miscleavages
+     * @param options the options object
+     * @param errorMessage The message it should display if not a valid value
+     * @return true if the file is a valid file
+     */
+    public final boolean checkMC(final String mc, final Options options, final String errorMessage) {
+        HashSet<Integer> values = new HashSet<>();
+        values.add(0);
+        values.add(1);
+        values.add(2);
+        values.add(3);
+        if (!values.contains(Integer.parseInt(mc))) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp(errorMessage, options);
+            System.exit(0);
+        }
+        return true;
     }
 }

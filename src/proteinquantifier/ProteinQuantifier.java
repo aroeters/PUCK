@@ -39,7 +39,8 @@ public class ProteinQuantifier {
                     cmdArguments.get("f").toString(),
                     cmdArguments.get("d").toString(),
                     Integer.parseInt(cmdArguments.get("e").toString()),
-                    cmdArguments.get("o").toString());
+                    cmdArguments.get("o").toString(),
+                    Integer.parseInt(cmdArguments.get("m").toString()));
         } else if (cmdArguments.get("p") == null) {
             PeptideFileParser pfp = new PeptideFileParser();
             PeptideCollection externalPepCol = pfp.getPeptideCollectionByInput((String) cmdArguments.get("g").toString());
@@ -51,7 +52,8 @@ public class ProteinQuantifier {
                     cmdArguments.get("d").toString(),
                     Integer.parseInt(cmdArguments.get("e").toString()),
                     cmdArguments.get("o").toString(),
-                    externalPepCol);
+                    externalPepCol,
+                    Integer.parseInt(cmdArguments.get("m").toString()));
         } else {
             PeptideFileParser pfp = new PeptideFileParser();
             PeptideCollection externalPepCol = pfp.getPeptideCollectionByFile(cmdArguments.get("p").toString());
@@ -63,7 +65,8 @@ public class ProteinQuantifier {
                     cmdArguments.get("d").toString(),
                     Integer.parseInt(cmdArguments.get("e").toString()),
                     cmdArguments.get("o").toString(),
-                    externalPepCol);
+                    externalPepCol,
+                    Integer.parseInt(cmdArguments.get("m").toString()));
         }
         ProteinCollection proteinCollection = databaseParser.getProteinCollection();
         databaseParser.getPeptideUniqueness(proteinCollection);

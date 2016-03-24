@@ -10,7 +10,7 @@ package tools;
 public class StringSearch {
 
     /**
-     * The bad character skip array.
+     * The faulty character skip array.
      */
     private int[] shifts;
     /**

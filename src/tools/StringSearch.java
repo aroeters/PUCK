@@ -10,7 +10,7 @@ package tools;
 public class StringSearch {
 
     /**
-     * The faulty character skip array.
+     * The bad character skip array.
      */
     private int[] shifts;
     /**
@@ -23,8 +23,8 @@ public class StringSearch {
     private final String pattern;
 
     /**
-     * Constructor of the class, sets all used and preprocesses the pattern
-     * string.
+     * Constructor of the class, sets all used variables and preprocesses 
+     * the pattern string.
      *
      * @param patternIn The string to searchPattern for
      */

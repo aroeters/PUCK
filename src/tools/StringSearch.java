@@ -26,7 +26,7 @@ public class StringSearch {
      * Constructor of the class, sets all used and preprocesses the pattern
      * string.
      *
-     * @param patternIn The string to search for
+     * @param patternIn The string to searchPattern for
      */
     public StringSearch(final String patternIn) {
         this.R = 256; // set the radix
@@ -44,10 +44,10 @@ public class StringSearch {
 
     /**
      * Searches for the pattern in the given string.
-     * @param stringIn the string to search in
+     * @param stringIn the string to searchPattern in
      * @return true if the pattern is found in the string else false
      */
-    public final boolean search(final String stringIn) {
+    public final boolean searchPattern(final String stringIn) {
         int patLen = pattern.length();
         int inLen = stringIn.length();
         int skip;

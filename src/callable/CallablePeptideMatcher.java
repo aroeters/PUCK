@@ -36,8 +36,8 @@ public class CallablePeptideMatcher {
     /**
      * Initiates the class.
      *
-     * @param pepCol all peptides to search for
-     * @param protCol all protein objects to search against
+     * @param pepCol all peptides to searchPattern for
+     * @param protCol all protein objects to searchPattern against
      * @throws Exception when an Error occurs
      */
     public CallablePeptideMatcher(final PeptideCollection pepCol,
@@ -57,14 +57,14 @@ public class CallablePeptideMatcher {
          */
         private final String peptide;
         /**
-         * The total protein database to search the peptide in.
+         * The total protein database to searchPattern the peptide in.
          */
         private final ProteinCollection protCol;
 
         /**
          * Initiates the subclass.
          *
-         * @param peptideEntry the peptide to search for in the proteins.
+         * @param peptideEntry the peptide to searchPattern for in the proteins.
          * @param protCol the whole protein collection
          */
         public CallableMatcher(final String peptideEntry, final ProteinCollection protCol) {
@@ -78,7 +78,7 @@ public class CallablePeptideMatcher {
             peptideMatches.add(peptide);
             StringSearch ss = new StringSearch(peptide);
             for (Protein protein : this.protCol.getProteins().values()) {
-                if (ss.search(protein.getSequence())) {
+                if (ss.searchPattern(protein.getSequence())) {
                     peptideMatches.add(protein.getName());
                 }
             }

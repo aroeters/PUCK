@@ -50,16 +50,16 @@ public class StringSearch {
     public final boolean searchPattern(final String stringIn) {
         int patLen = pattern.length();
         int inLen = stringIn.length();
-        int skip;
-        for (int i = 0; i <= inLen - patLen; i += skip) {
-            skip = 0;
+        int shift;
+        for (int i = 0; i <= inLen - patLen; i += shift) {
+            shift = 0;
             for (int j = patLen - 1; j >= 0; j--) {
                 if (pattern.charAt(j) != stringIn.charAt(i + j)) {
-                    skip = Math.max(1, j - shifts[stringIn.charAt(i + j)]);
+                    shift = Math.max(1, j - shifts[stringIn.charAt(i + j)]);
                     break;
                 }
             }
-            if (skip == 0) return true; // found
+            if (shift == 0) return true; // found
         }
         return false; // not found
     }

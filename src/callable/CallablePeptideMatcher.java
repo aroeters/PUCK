@@ -100,7 +100,7 @@ public class CallablePeptideMatcher {
         Set<Future<LinkedList<String>>> set = new HashSet<>();
         Callable<LinkedList<String>> callable;
         
-        for (String peptide : this.pepCol.getAllPeptides().subList(1, 1000)) {
+        for (String peptide : this.pepCol.getAllPeptides()) {
             callable = new CallableMatcher(peptide, this.protCol);
             Future<LinkedList<String>> future = pool.submit(callable);
             set.add(future);

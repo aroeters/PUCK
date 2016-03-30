@@ -15,7 +15,7 @@ import java.util.concurrent.Future;
 import collectionobject.Protein;
 import collectionobject.ProteinCollection;
 import collectionobject.PeptideCollection;
-import tools.StringSearch;
+import boyermoorestringsearch.BoyerMoore;
 
 
 /**
@@ -76,7 +76,7 @@ public class CallablePeptideMatcher {
         public final LinkedList<String> call() {
             LinkedList<String> peptideMatches = new LinkedList<>();
             peptideMatches.add(peptide);
-            StringSearch ss = new StringSearch(peptide);
+            BoyerMoore ss = new BoyerMoore(peptide);
             for (Protein protein : this.protCol.getProteins().values()) {
                 if (ss.searchPattern(protein.getSequence())) {
                     peptideMatches.add(protein.getName());

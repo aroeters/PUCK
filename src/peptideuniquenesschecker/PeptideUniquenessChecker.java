@@ -1,7 +1,7 @@
 /*
  * Author: Arne Roeters
  */
-package proteinquantifier;
+package peptideuniquenesschecker;
 
 import collectionobject.PeptideCollection;
 import tools.CMDArgumentParser;
@@ -15,7 +15,7 @@ import java.util.HashMap;
  *
  * @author arne
  */
-public class ProteinQuantifier {
+public class PeptideUniquenessChecker {
 
     /**
      * The main that puts everything together.

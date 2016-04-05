@@ -3,10 +3,17 @@
  */
 package fileparser;
 
+import proteindigesters.ChemotrypsinDigesterHighSpecific;
+import proteindigesters.PepsinDigesterLowPH;
+import proteindigesters.TrypsinDigester;
+import proteindigesters.NoDigester;
+import proteindigesters.TrypsinDigesterConservative;
+import proteindigesters.ChemotrypsinDigesterLowSpecific;
+import proteindigesters.Digester;
+import proteindigesters.PepsinDigesterHigherPH;
 import callable.CallablePeptideMatcher;
 import databaseconnection.ENSEMBLDatabaseConnector;
 import filewriter.CsvFileWriter;
-import peptidedigesters.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;

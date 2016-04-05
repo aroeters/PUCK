@@ -320,7 +320,7 @@ public class CMDArgumentParser {
     }
 
     /**
-     * Checks if the given file path leads to a file
+     * Checks if the given peptides are valid peptides
      *
      * @param peptides the given peptides
      * @param options the options object
@@ -358,7 +358,7 @@ public class CMDArgumentParser {
     }
 
     /**
-     * Checks if the given file path leads to a file
+     * Checks if the number of miscleavages is allowed.
      *
      * @param mc the number of miscleavages
      * @param options the options object

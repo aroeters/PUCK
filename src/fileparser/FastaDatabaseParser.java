@@ -153,14 +153,14 @@ public class FastaDatabaseParser {
         String name = "";
         Protein protein = new Protein();
         Boolean notValidProtein = false;
-
+        ArrayList<String> peptides;
         while ((line = br.readLine()) != null) {
             if (!notValidProtein) {
                 if (line.startsWith(">GENSCAN")) {
                     notValidProtein = true;
                 } else if (line.startsWith(">")) {
                     if (protein.getName() != null) {
-                        ArrayList<String> peptides = this.digesterType.digest(protein.getSequence());
+                        peptides = this.digesterType.digest(protein.getSequence());
                         for (String peptide : peptides) {
                             protein.addTotalPeptides(peptideCollection.addPeptide(peptide));
                         }

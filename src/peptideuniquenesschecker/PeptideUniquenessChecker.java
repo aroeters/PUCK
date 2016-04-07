@@ -29,7 +29,6 @@ public class PeptideUniquenessChecker {
     public static void main(final String[] args) throws IOException, Exception {
         CMDArgumentParser parser = new CMDArgumentParser();
         HashMap cmdArguments = parser.getCMDArguments(args);
-
         FastaDatabaseParser databaseParser;
         if (cmdArguments.get("p") == null && cmdArguments.get("g") == null) {
             databaseParser = new FastaDatabaseParser(
@@ -69,7 +68,7 @@ public class PeptideUniquenessChecker {
                     Integer.parseInt(cmdArguments.get("m").toString()));
         }
         ProteinCollection proteinCollection = databaseParser.getProteinCollection();
-        databaseParser.getPeptideUniqueness(proteinCollection);
+        databaseParser.getPeptideUniqueness(proteinCollection, cmdArguments.get("z").toString());
     }
 
 }

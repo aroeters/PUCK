@@ -12,7 +12,6 @@ import proteindigesters.ChemotrypsinDigesterLowSpecific;
 import proteindigesters.Digester;
 import proteindigesters.PepsinDigesterHigherPH;
 import callable.CallablePeptideMatcher;
-import databaseconnection.ENSEMBLDatabaseConnector;
 import filewriter.CsvFileWriter;
 import java.io.BufferedReader;
 import java.io.File;
@@ -195,12 +194,14 @@ public class FastaDatabaseParser {
      * writes the uniqueness of the peptide per protein to a file.
      *
      * @param proteinCollection a filled protein collection
+     * @param ensemblFile the ensembl file
      * @throws java.io.IOException when input or output gives an error
      * @throws Exception when an error occurs
      */
-    public final void getPeptideUniqueness(final ProteinCollection proteinCollection) throws IOException, Exception {
+    public final void getPeptideUniqueness(final ProteinCollection proteinCollection, final String ensemblFile) throws IOException, Exception {
         // Get all matches per peptide with the given database
-        ENSEMBLDatabaseConnector edc = new ENSEMBLDatabaseConnector();
+        EnsemblFileParser edc = new EnsemblFileParser();
+        HashMap<String, String> ensemblMap = edc.getEnsemblID(ensemblFile);
         Set<Future<LinkedList<String>>> set;
         PeptideCollection UsedPeptideCollection;
         if (externalPepCol == null) {
@@ -229,7 +230,7 @@ public class FastaDatabaseParser {
                 peptideIndex = UsedPeptideCollection.getPeptideIndex(futureSet.get(0));
                 geneMap = new HashMap<>();
                 for (String proteinName : futureSet.subList(1, futureSet.size())) {
-                    proteinNameConverted = edc.getENSG(proteinName);
+                    proteinNameConverted = ensemblMap.get(proteinName);
                     if (geneMap.containsKey(proteinNameConverted)) {
                         geneMap.get(proteinNameConverted).add(proteinName);
                     } else {

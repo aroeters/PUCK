@@ -73,6 +73,7 @@ public class CMDArgumentParser {
                         + "Default = 0 (no digestion)")
                 .hasArg()
                 .create("d"));
+        
         options.addOption(OptionBuilder.withLongOpt("min_peptide_length")
                 .withDescription("Minimal length of the peptide to be used.\n"
                         + "Default = 6")
@@ -104,6 +105,10 @@ public class CMDArgumentParser {
                 .withDescription("The number of miscleavages to use. (default = 0)")
                 .hasArgs()
                 .create("m"));
+                options.addOption(OptionBuilder.withLongOpt("ensembl")
+                .withDescription("The path + file that is needed to convert protein ids to ensembl gene ids.")
+                .hasArg()
+                .create("z"));
 
         CommandLineParser parser = new BasicParser();
         CommandLine cmd = parser.parse(options, args);
@@ -202,6 +207,15 @@ public class CMDArgumentParser {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("Please do not provide a peptide file (-p, --peptide_file) and command line peptides (-g, --peptides) at the same time.", options);
             System.exit(0);
+        }
+        if (!cmd.hasOption("z") && !cmd.hasOption("ensembl")) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("You should provide a valid file with the ENSG and protein ID", options);
+            System.exit(0);
+        } else {
+            if (checkValidEnsemblFile(cmd.getOptionValue("z"), options, "You should provide a valid file with the ENSG and protein ID")) {
+                this.arguments.put("z", cmd.getOptionValue("z"));
+            }
         }
 
         return arguments;
@@ -377,5 +391,38 @@ public class CMDArgumentParser {
             System.exit(0);
         }
         return true;
+    }
+        /**
+     * Checks if the option value is a valid ENSEMBL ID file. Checks if the file
+     * extension is .fa or .fasta and if it is a valid file. When that passes
+     * checks if the first or second line starts with an ">" which is typical
+     * for a fa and fasta file.
+     *
+     * @param optionValue the value of option
+     * @param options the options object
+     * @param errorMessage The message it should display if not a valid value
+     * @return true if option value is a valid database in .fa or .fasta format
+     * @throws FileNotFoundException if the file is not found.
+     * @throws IOException if an error occurs during in or output handling
+     */
+    public final boolean checkValidEnsemblFile(final String optionValue, final Options options, final String errorMessage)
+            throws FileNotFoundException, IOException {
+        File file = new File(optionValue);
+        if (file.isFile()) {
+            BufferedReader br = new BufferedReader(new FileReader(file.getPath()));
+            String[] line = br.readLine().split("\t");
+            if (line[0].startsWith("ENSG") || line[1].startsWith("ENSG")) {
+                return true;
+            } else {
+                HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp(errorMessage, options);
+                System.exit(0);
+            }
+        } else {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp(errorMessage, options);
+            System.exit(0);
+        }
+        return false;
     }
 }

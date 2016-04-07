@@ -28,7 +28,7 @@ public class ENSEMBLDatabaseConnector {
      *
      * @throws java.lang.Exception when an error occurs
      */
-    public ENSEMBLDatabaseConnector() throws Exception {
+    public ENSEMBLDatabaseConnector(final String database) throws Exception {
         this.sql2o = new Sql2o("jdbc:mysql://ensembldb.ensembl.org:5306/homo_sapiens_core_83_38", "anonymous", "");
         getIDToENSGDB();
     }

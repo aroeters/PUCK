@@ -21,19 +21,26 @@ import java.util.HashMap;
  * @author arne
  */
 public class EnsemblFileParser {
+    /**
+     * Getter of the ensembl id file parser.
+     * @param filename name of the file that contains the ids
+     * @return HashMap with the converion in it.
+     * @throws FileNotFoundException when the file is not found
+     * @throws IOException 
+     */
     public final HashMap<String, String> getEnsemblID(final String filename) throws FileNotFoundException, IOException {
         System.out.println("Collecting ids from: " + filename);
         HashMap<String, String> idConversion = new HashMap<>();
         BufferedReader br = new BufferedReader(new FileReader(new File(filename).getPath()));
         String line = br.readLine();
         String[] splitLine = line.split("\t");
-        Integer ENSG;
-        Integer otherID;
-        if (splitLine[1].startsWith("ENSG")) ENSG = 1; else ENSG = 0;
-        if (splitLine[1].startsWith("ENSG")) otherID = 0; else otherID = 1;
-        while ((line=br.readLine()) != null) {
+        Integer ensg;
+        Integer otherId;
+        if (splitLine[1].startsWith("ENSG")) ensg = 1; else ensg = 0;
+        if (splitLine[1].startsWith("ENSG")) otherId = 0; else otherId = 1;
+        while ((line = br.readLine()) != null) {
             splitLine = line.split("\t");
-            idConversion.put(splitLine[otherID], splitLine[ENSG]);
+            idConversion.put(splitLine[otherId], splitLine[ensg]);
         }
         return idConversion;
     }

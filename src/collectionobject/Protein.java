@@ -154,7 +154,6 @@ public class Protein implements LargeSequenceObject {
      * @return True if peptide is part of the protein
      */
     public final Boolean checkPeptide(final String peptide) {
-        
         return this.sequence.contains(peptide);
     }
 

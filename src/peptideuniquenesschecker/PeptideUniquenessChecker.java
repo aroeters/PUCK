@@ -10,6 +10,7 @@ import fileparser.FastaDatabaseParser;
 import fileparser.PeptideFileParser;
 import java.io.IOException;
 import java.util.HashMap;
+import org.apache.commons.cli.UnrecognizedOptionException;
 
 /**
  *
@@ -28,7 +29,12 @@ public class PeptideUniquenessChecker {
      */
     public static void main(final String[] args) throws IOException, Exception {
         CMDArgumentParser parser = new CMDArgumentParser();
-        HashMap cmdArguments = parser.getCMDArguments(args);
+        HashMap<String, String> cmdArguments = null;
+        try {
+        cmdArguments = parser.getCMDArguments(args);
+        } catch (UnrecognizedOptionException e) {
+            System.out.println("You used an unsupported argument. Please use -h to get the manual of the program");
+        }
         FastaDatabaseParser databaseParser;
         if (cmdArguments.get("p") == null && cmdArguments.get("g") == null) {
             databaseParser = new FastaDatabaseParser(

@@ -20,6 +20,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.UnrecognizedOptionException;
 
 /**
  *
@@ -42,7 +43,7 @@ public class CMDArgumentParser {
      * @throws IOException when an error occurs in the handling of I/O
      */
     public final HashMap<String, String> getCMDArguments(final String[] args)
-            throws ParseException, FileNotFoundException, IOException {
+            throws ParseException, FileNotFoundException, IOException, UnrecognizedOptionException {
         // Create options object
         Options options = new Options();
         // Add all options

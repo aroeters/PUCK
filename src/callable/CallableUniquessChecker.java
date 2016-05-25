@@ -121,11 +121,11 @@ public class CallableUniquessChecker {
         pool.shutdown();
         return set;
     }
+
     /**
      * Subclass that can be called and used in a thread pool.
      */
     public static class CallableChecker implements Callable {
-        
 
         /**
          * The gene object.
@@ -161,6 +161,7 @@ public class CallableUniquessChecker {
                 }
             }
             info.put("unique", unique);
+            System.out.println(unique);
             ArrayList<String> non_unique = new ArrayList<>();
             for (Integer peptide : this.sobject.getNonUniquePeptides()) {
                 if (sobject.checkTotalPeptide(peptide)) {
@@ -170,6 +171,8 @@ public class CallableUniquessChecker {
                 }
             }
             info.put("non_unique", non_unique);
+            System.out.println(non_unique);
+            System.out.println(info);
             return info;
         }
     }
@@ -206,12 +209,13 @@ public class CallableUniquessChecker {
             this.pepCollection = pepCol;
             this.peptideCheckCollection = AllPeptides;
         }
-        
+
         @Override
         public final HashMap<String, ArrayList<String>> call() {
             String peptideSequence;
             HashMap<String, ArrayList<String>> info = new HashMap<>();
-            info.put(this.sobject.getName(), null);
+            if (this.sobject.getName() != null) {
+                info.put(this.sobject.getName(), null);
             ArrayList<String> unique = new ArrayList<>();
             for (Integer peptide : this.sobject.getUniquePeptides()) {
                 String peptideSeq = pepCollection.getPeptideSequence(peptide);
@@ -233,6 +237,8 @@ public class CallableUniquessChecker {
             }
             info.put("non_unique", non_unique);
             return info;
+            }
+            return new HashMap<>();
         }
     }
 }

@@ -10,6 +10,7 @@ import fileparser.FastaDatabaseParser;
 import fileparser.PeptideFileParser;
 import java.io.IOException;
 import java.util.HashMap;
+import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.UnrecognizedOptionException;
 
 /**
@@ -34,47 +35,50 @@ public class PeptideUniquenessChecker {
         cmdArguments = parser.getCMDArguments(args);
         } catch (UnrecognizedOptionException e) {
             System.out.println("You used an unsupported argument. Please use -h to get the manual of the program");
+        } catch (MissingArgumentException e) {
+            System.out.println("One of the arguments you gave did not have a value");
+            System.exit(0);
         }
         FastaDatabaseParser databaseParser;
         if (cmdArguments.get("p") == null && cmdArguments.get("g") == null) {
             databaseParser = new FastaDatabaseParser(
-                    cmdArguments.get("a").toString(),
-                    Integer.parseInt(cmdArguments.get("b").toString()),
-                    cmdArguments.get("c").toString(),
-                    cmdArguments.get("f").toString(),
-                    cmdArguments.get("d").toString(),
-                    Integer.parseInt(cmdArguments.get("e").toString()),
-                    cmdArguments.get("o").toString(),
-                    Integer.parseInt(cmdArguments.get("m").toString()));
+                    cmdArguments.get("a"),
+                    Integer.parseInt(cmdArguments.get("b")),
+                    cmdArguments.get("c"),
+                    cmdArguments.get("f"),
+                    cmdArguments.get("d"),
+                    Integer.parseInt(cmdArguments.get("e")),
+                    cmdArguments.get("o"),
+                    Integer.parseInt(cmdArguments.get("m")));
         } else if (cmdArguments.get("p") == null) {
             PeptideFileParser pfp = new PeptideFileParser();
-            PeptideCollection externalPepCol = pfp.getPeptideCollectionByInput((String) cmdArguments.get("g").toString());
+            PeptideCollection externalPepCol = pfp.getPeptideCollectionByInput((String) cmdArguments.get("g"));
             databaseParser = new FastaDatabaseParser(
-                    cmdArguments.get("a").toString(),
-                    Integer.parseInt(cmdArguments.get("b").toString()),
-                    cmdArguments.get("c").toString(),
-                    cmdArguments.get("f").toString(),
-                    cmdArguments.get("d").toString(),
-                    Integer.parseInt(cmdArguments.get("e").toString()),
-                    cmdArguments.get("o").toString(),
+                    cmdArguments.get("a"),
+                    Integer.parseInt(cmdArguments.get("b")),
+                    cmdArguments.get("c"),
+                    cmdArguments.get("f"),
+                    cmdArguments.get("d"),
+                    Integer.parseInt(cmdArguments.get("e")),
+                    cmdArguments.get("o"),
                     externalPepCol,
-                    Integer.parseInt(cmdArguments.get("m").toString()));
+                    Integer.parseInt(cmdArguments.get("m")));
         } else {
             PeptideFileParser pfp = new PeptideFileParser();
-            PeptideCollection externalPepCol = pfp.getPeptideCollectionByFile(cmdArguments.get("p").toString());
+            PeptideCollection externalPepCol = pfp.getPeptideCollectionByFile(cmdArguments.get("p"));
             databaseParser = new FastaDatabaseParser(
-                    cmdArguments.get("a").toString(),
-                    Integer.parseInt(cmdArguments.get("b").toString()),
-                    cmdArguments.get("c").toString(),
-                    cmdArguments.get("f").toString(),
-                    cmdArguments.get("d").toString(),
-                    Integer.parseInt(cmdArguments.get("e").toString()),
-                    cmdArguments.get("o").toString(),
+                    cmdArguments.get("a"),
+                    Integer.parseInt(cmdArguments.get("b")),
+                    cmdArguments.get("c"),
+                    cmdArguments.get("f"),
+                    cmdArguments.get("d"),
+                    Integer.parseInt(cmdArguments.get("e")),
+                    cmdArguments.get("o"),
                     externalPepCol,
-                    Integer.parseInt(cmdArguments.get("m").toString()));
+                    Integer.parseInt(cmdArguments.get("m")));
         }
         ProteinCollection proteinCollection = databaseParser.getProteinCollection();
-        databaseParser.getPeptideUniqueness(proteinCollection, cmdArguments.get("z").toString());
+        databaseParser.getPeptideUniqueness(proteinCollection, cmdArguments.get("z"));
     }
 
 }

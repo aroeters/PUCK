@@ -98,27 +98,29 @@ public class CsvFileWriter {
                 HashMap<String, ArrayList<String>> futureMap = future.get();
                 temporary = new ArrayList<>();
                 temporary.addAll(futureMap.keySet());
-                for (String name : temporary) {
-                    if (!name.equals("unique") && !name.equals("non_unique")) {
-                        bw.write(name + "\t");
+                if (!temporary.isEmpty()) {
+                    for (String name : temporary) {
+                        if (!name.equals("unique") && !name.equals("non_unique")) {
+                            bw.write(name + "\t");
+                        }
                     }
-                }
-                for (String peptide : futureMap.get("unique")) {
-                    if (futureMap.get("unique").indexOf(peptide) == futureMap.get("unique").size() - 1) {
-                        bw.write(peptide);
-                    } else {
-                        bw.write(peptide + ";");
+                    for (String peptide : futureMap.get("unique")) {
+                        if (futureMap.get("unique").indexOf(peptide) == futureMap.get("unique").size() - 1) {
+                            bw.write(peptide);
+                        } else {
+                            bw.write(peptide + ";");
+                        }
                     }
-                }
-                bw.write("\t");
-                for (String peptide : futureMap.get("non_unique")) {
-                    if (futureMap.get("non_unique").indexOf(peptide) == futureMap.get("non_unique").size() - 1) {
-                        bw.write(peptide.toLowerCase());
-                    } else {
-                        bw.write(peptide.toLowerCase() + ";");
+                    bw.write("\t");
+                    for (String peptide : futureMap.get("non_unique")) {
+                        if (futureMap.get("non_unique").indexOf(peptide) == futureMap.get("non_unique").size() - 1) {
+                            bw.write(peptide.toLowerCase());
+                        } else {
+                            bw.write(peptide.toLowerCase() + ";");
+                        }
                     }
+                    bw.write("\n");
                 }
-                bw.write("\n");
             }
         }
         System.out.println("Done...");

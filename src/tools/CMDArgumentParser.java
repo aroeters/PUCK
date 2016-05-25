@@ -16,6 +16,7 @@ import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
@@ -43,7 +44,7 @@ public class CMDArgumentParser {
      * @throws IOException when an error occurs in the handling of I/O
      */
     public final HashMap<String, String> getCMDArguments(final String[] args)
-            throws ParseException, FileNotFoundException, IOException, UnrecognizedOptionException {
+            throws ParseException, FileNotFoundException, IOException, UnrecognizedOptionException, MissingArgumentException {
         // Create options object
         Options options = new Options();
         // Add all options
@@ -74,7 +75,7 @@ public class CMDArgumentParser {
                         + "Default = 0 (no digestion)")
                 .hasArg()
                 .create("d"));
-        
+
         options.addOption(OptionBuilder.withLongOpt("min_peptide_length")
                 .withDescription("Minimal length of the peptide to be used.\n"
                         + "Default = 6")
@@ -106,7 +107,7 @@ public class CMDArgumentParser {
                 .withDescription("The number of miscleavages to use. (default = 0)")
                 .hasArgs()
                 .create("m"));
-                options.addOption(OptionBuilder.withLongOpt("ensembl")
+        options.addOption(OptionBuilder.withLongOpt("ensembl")
                 .withDescription("The path + file that is needed to convert protein ids to ensembl gene ids.")
                 .hasArg()
                 .create("z"));
@@ -119,106 +120,105 @@ public class CMDArgumentParser {
             formatter.printHelp("Help", options);
             System.exit(0);
         }
-        // Checks the threads option
-        if (cmd.hasOption("a") || cmd.hasOption("threads")) {
-            if (checkValidInteger(cmd.getOptionValue("a"), options, "The number of threads you entered is not a valid number.")) {
-                this.arguments.put("a", cmd.getOptionValue("a"));
-            }
-        } else {
-            this.arguments.put("a", "4");
-        }
-        // Checks the max proteins option
-        if (cmd.hasOption("b") || cmd.hasOption("max_proteins")) {
-            if (checkValidInteger(cmd.getOptionValue("b"), options, "The number of proteins that a peptide can match to is not a valid number.")) {
-                this.arguments.put("b", cmd.getOptionValue("b"));
-            }
-        } else {
-            this.arguments.put("b", "100");
-        }
-        // Checks the result dir option
-        if (cmd.hasOption("c") || cmd.hasOption("result_dir")) {
-            if (checkValidDirectory(cmd.getOptionValue("c"), options, "The directory for the final results is not a valid directory.")) {
-                this.arguments.put("c", cmd.getOptionValue("c"));
-            }
-        } else {
-            this.arguments.put("c", "./");
-        }
-        // checks the digestion option
-        if (cmd.hasOption("d") || cmd.hasOption("digestion")) {
-            if (checkValidInteger(cmd.getOptionValue("d"), options, "The digestion you chose is not correct.\nPlease try again with a valid digestion method.")) {
-                this.arguments.put("d", cmd.getOptionValue("d"));
-            }
-        } else {
-            this.arguments.put("d", "0");
-        }
-        // Checks the minimal peptide length option
-        if (cmd.hasOption("e") || cmd.hasOption("min_peptide_length")) {
-            if (checkValidInteger(cmd.getOptionValue("e"), options, "You should enter a valid number for the minimal length of a peptide.")) {
-                this.arguments.put("e", cmd.getOptionValue("e"));
-            }
-        } else {
-            this.arguments.put("e", "6");
-        }
-        // Checks the database option
-        if (!cmd.hasOption("f") && !cmd.hasOption("database")) {
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("You should provide a valid database to match the peptides against.\nThis file needs to be .fa or .fasta format", options);
-            System.exit(0);
-        } else {
-            if (checkValidDatabaseFile(cmd.getOptionValue("f"), options, "You should provide a valid database to match the peptides against.\n"
-                    + "This file has to be a valid .fa or .fasta format.")) {
-                this.arguments.put("f", cmd.getOptionValue("f"));
-            }
-        }
-        if (cmd.hasOption("p") || cmd.hasOption("peptide_file")) {
-            if (checkValidFile(cmd.getOptionValue("p"), options, "You should provide a valid file with peptides in it.")) {
-                this.arguments.put("p", cmd.getOptionValue("p"));
-            }
-        } else {
-            this.arguments.put("p", null);
-        }
-        if (cmd.hasOption("g") || cmd.hasOption("peptides")) {
-            if (checkValidPeptides(cmd.getOptionValues("g"), options, "One of the peptides you provided is not correct.")) {
-                StringBuilder peptideLine = new StringBuilder();
-                for (String peptide : cmd.getOptionValues("g")) {
-                    peptideLine.append(peptide + "_");
+            // Checks the threads option
+            if (cmd.hasOption("a") || cmd.hasOption("threads")) {
+                if (checkValidInteger(cmd.getOptionValue("a"), options, "The number of threads you entered is not a valid number.")) {
+                    this.arguments.put("a", cmd.getOptionValue("a"));
                 }
+            } else {
+                this.arguments.put("a", "4");
+            }
+            // Checks the max proteins option
+            if (cmd.hasOption("b") || cmd.hasOption("max_proteins")) {
+                if (checkValidInteger(cmd.getOptionValue("b"), options, "The number of proteins that a peptide can match to is not a valid number.")) {
+                    this.arguments.put("b", cmd.getOptionValue("b"));
+                }
+            } else {
+                this.arguments.put("b", "100");
+            }
+            // Checks the result dir option
+            if (cmd.hasOption("c") || cmd.hasOption("result_dir")) {
+                if (checkValidDirectory(cmd.getOptionValue("c"), options, "The directory for the final results is not a valid directory.")) {
+                    this.arguments.put("c", cmd.getOptionValue("c"));
+                }
+            } else {
+                this.arguments.put("c", "./");
+            }
+            // checks the digestion option
+            if (cmd.hasOption("d") || cmd.hasOption("digestion")) {
+                if (checkValidInteger(cmd.getOptionValue("d"), options, "The digestion you chose is not correct.\nPlease try again with a valid digestion method.")) {
+                    this.arguments.put("d", cmd.getOptionValue("d"));
+                }
+            } else {
+                this.arguments.put("d", "0");
+            }
+            // Checks the minimal peptide length option
+            if (cmd.hasOption("e") || cmd.hasOption("min_peptide_length")) {
+                if (checkValidInteger(cmd.getOptionValue("e"), options, "You should enter a valid number for the minimal length of a peptide.")) {
+                    this.arguments.put("e", cmd.getOptionValue("e"));
+                }
+            } else {
+                this.arguments.put("e", "6");
+            }
+            // Checks the database option
+            if (!cmd.hasOption("f") && !cmd.hasOption("database")) {
+                HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp("You should provide a valid database to match the peptides against.\nThis file needs to be .fa or .fasta format", options);
+                System.exit(0);
+            } else {
+                if (checkValidDatabaseFile(cmd.getOptionValue("f"), options, "You should provide a valid database to match the peptides against.\n"
+                        + "This file has to be a valid .fa or .fasta format.")) {
+                    this.arguments.put("f", cmd.getOptionValue("f"));
+                }
+            }
+            if (cmd.hasOption("p") || cmd.hasOption("peptide_file")) {
+                if (checkValidFile(cmd.getOptionValue("p"), options, "You should provide a valid file with peptides in it.")) {
+                    this.arguments.put("p", cmd.getOptionValue("p"));
+                }
+            } else {
+                this.arguments.put("p", null);
+            }
+            if (cmd.hasOption("g") || cmd.hasOption("peptides")) {
+                if (checkValidPeptides(cmd.getOptionValues("g"), options, "One of the peptides you provided is not correct.")) {
+                    StringBuilder peptideLine = new StringBuilder();
+                    for (String peptide : cmd.getOptionValues("g")) {
+                        peptideLine.append(peptide + "_");
+                    }
 
-                this.arguments.put("g", peptideLine.substring(0, peptideLine.length() - 1));
+                    this.arguments.put("g", peptideLine.substring(0, peptideLine.length() - 1));
+                }
+            } else {
+                this.arguments.put("g", null);
             }
-        } else {
-            this.arguments.put("g", null);
-        }
-        if (cmd.hasOption("o") || cmd.hasOption("file_options")) {
-            if (checkFileOptions(cmd.getOptionValue("o"), options, "The file option you chose is not correct.\n"
-                    + "Choose p (proteins), g (genes), b(both)")) {
-                arguments.put("o", cmd.getOptionValue("o"));
+            if (cmd.hasOption("o") || cmd.hasOption("file_options")) {
+                if (checkFileOptions(cmd.getOptionValue("o"), options, "The file option you chose is not correct.\n"
+                        + "Choose p (proteins), g (genes), b(both)")) {
+                    arguments.put("o", cmd.getOptionValue("o"));
+                }
+            } else {
+                arguments.put("o", "b");
             }
-        } else {
-            arguments.put("o", "b");
-        }
-        if (cmd.hasOption("m") || cmd.hasOption("miscleavages")) {
-            if (checkMC(cmd.getOptionValue("m"), options, "The number of miscleavages used (max = 3)")) {
-                arguments.put("m", cmd.getOptionValue("m"));
+            if (cmd.hasOption("m") || cmd.hasOption("miscleavages")) {
+                if (checkMC(cmd.getOptionValue("m"), options, "The number of miscleavages used (max = 3)")) {
+                    arguments.put("m", cmd.getOptionValue("m"));
+                }
+            } else {
+                arguments.put("m", "0");
             }
-        } else {
-            arguments.put("m", "0");
-        }
-        if (cmd.hasOption("p") && cmd.hasOption("g")) {
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("Please do not provide a peptide file (-p, --peptide_file) and command line peptides (-g, --peptides) at the same time.", options);
-            System.exit(0);
-        }
-        if (!cmd.hasOption("z") && !cmd.hasOption("ensembl")) {
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("You should provide a valid file with the ENSG and protein ID", options);
-            System.exit(0);
-        } else {
-            if (checkValidEnsemblFile(cmd.getOptionValue("z"), options, "You should provide a valid file with the ENSG and protein ID")) {
-                this.arguments.put("z", cmd.getOptionValue("z"));
+            if (cmd.hasOption("p") && cmd.hasOption("g")) {
+                HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp("Please do not provide a peptide file (-p, --peptide_file) and command line peptides (-g, --peptides) at the same time.", options);
+                System.exit(0);
             }
-        }
-
+            if (!cmd.hasOption("z") && !cmd.hasOption("ensembl")) {
+                HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp("You should provide a valid file with the ENSG and protein ID", options);
+                System.exit(0);
+            } else {
+                if (checkValidEnsemblFile(cmd.getOptionValue("z"), options, "You should provide a valid file with the ENSG and protein ID")) {
+                    this.arguments.put("z", cmd.getOptionValue("z"));
+                }
+            }
         return arguments;
     }
 
@@ -393,7 +393,8 @@ public class CMDArgumentParser {
         }
         return true;
     }
-        /**
+
+    /**
      * Checks if the option value is a valid ENSEMBL ID file. Checks if the file
      * extension is .fa or .fasta and if it is a valid file. When that passes
      * checks if the first or second line starts with an ">" which is typical
